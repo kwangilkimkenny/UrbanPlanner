@@ -81,4 +81,6 @@ public class GridGenLogic : MonoBehaviour
             prebPosAll.Add(getPosPreb);
         }
     }
+
+    
 }

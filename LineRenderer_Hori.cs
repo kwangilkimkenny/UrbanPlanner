@@ -55,7 +55,8 @@ public class LineRenderer_Hori : MonoBehaviour
     public List<Vector3> temp, temp2, temp4, temp6, temp8, temp10 = new List<Vector3>();
 
 
-    void Start()
+
+    public void DrawRoadHori()
     {
         lr = GetComponent<LineRenderer>();
         lr.material = new Material(roadMaterial);
@@ -207,13 +208,42 @@ public class LineRenderer_Hori : MonoBehaviour
     }
 
 
-
-
-    private void Update()
+    // 삭제 후 도로 재생성 문제 해결 해야 /
+    public void Reset()
     {
+        //Debug.Log(" Reset Roads");
+        LineRenderer lr = gameObject.GetComponent<LineRenderer>();
+        lr.positionCount = 0;
 
+        spawnPrefabs_1.Clear();
+        spawnPrefabs_2.Clear();
+        spawnPrefabs_3.Clear();
+        spawnPrefabs_4.Clear();
+        spawnPrefabs_5.Clear();
+        spawnPrefabs_6.Clear();
+        spawnPrefabs_7.Clear();
+        spawnPrefabs_8.Clear();
+        spawnPrefabs_9.Clear();
+        spawnPrefabs_10.Clear();
+
+        temp.Clear();
+        temp2.Clear();
+        temp4.Clear();
+        temp6.Clear();
+        temp8.Clear();
+        temp10.Clear();
+
+        for (int i = 0; i < spawnPrefabs.Count; i++)
+        {
+            spawnPrefabs.RemoveAt(i);
+        }
+        for (int i = 0; i < spawnPrefabs_.Count; i++)
+        {
+            spawnPrefabs_.RemoveAt(i);
+        }
+
+        spawnPrefabs.Clear();
+        spawnPrefabs_.Clear();
     }
-
-
 
 }

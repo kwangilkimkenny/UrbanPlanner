@@ -58,7 +58,8 @@ public class LineRenderer_Verti : MonoBehaviour
     public List<Vector3> temp6 = new List<Vector3>();
 
 
-    void Start()
+
+    public void DrawRoadVerti()
     {
         lr = GetComponent<LineRenderer>();
         lr.material = new Material(roadMaterial);
@@ -180,7 +181,7 @@ public class LineRenderer_Verti : MonoBehaviour
                 foreach (Vector3 k in temp5)
                 {
                     spawnPrefabs_.Add(k);
-                    Debug.Log("spawnPrefabs_ 9 : " + k);
+                    //Debug.Log("spawnPrefabs_ 9 : " + k);
                 }
 
 
@@ -189,7 +190,7 @@ public class LineRenderer_Verti : MonoBehaviour
             }
             else
             {
-                Debug.Log("no more spawn prefabs!");
+                //Debug.Log("no more spawn prefabs!");
             }
         }
 
@@ -210,14 +211,33 @@ public class LineRenderer_Verti : MonoBehaviour
     }
 
 
-
-
-
-    private void Update()
+    // 삭제 후 도로 재생성 문제 해결 해야 함
+    public void Reset()
     {
+        
+        LineRenderer lr = gameObject.GetComponent<LineRenderer>();
+        lr.positionCount = 0;
+
+        for(int i = 0; i < spawnPrefabs.Count; i++)
+        {
+            spawnPrefabs.RemoveAt(i);
+        }
+        for (int i = 0; i < spawnPrefabs_.Count; i++)
+        {
+            spawnPrefabs_.RemoveAt(i);
+        }
+        temp.Clear();
+        temp2.Clear();
+        temp3.Clear();
+        temp4.Clear();
+        temp5.Clear();
+        temp6.Clear();
+
+
+        spawnPrefabs.Clear();
+        spawnPrefabs_.Clear();
 
     }
-
 
 
 }
