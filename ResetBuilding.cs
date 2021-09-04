@@ -13,7 +13,6 @@ public class ResetBuilding : MonoBehaviour
         foreach (GameObject buildings in GameObject.FindGameObjectsWithTag("building"))
         {
             buildings.SetActive(false);
-            //Destroy(buildings);
             
         }
 
