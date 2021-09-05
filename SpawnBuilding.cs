@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Drawing;
+using System.Linq;
 
 public class SpawnBuilding : MonoBehaviour
 
@@ -24,7 +25,7 @@ public class SpawnBuilding : MonoBehaviour
     // 생성한 빌딩의 게임오브젝트를 추적하시 위한 리스트 선언
     public List<GameObject> buildingPrebs = new List<GameObject>();
 
-    int maxBuilding = 500;
+    int maxBuilding = 15;
     int buildingCount = 0;
 
     // building이 스폰되어 있는가? 기본값은 안되어있다. 
@@ -36,24 +37,28 @@ public class SpawnBuilding : MonoBehaviour
 
     // 총 81개의 블for (int i = 0; i < spawnPrefabs.Count + 1; i++)
     public List<Vector3> interSecPos = new List<Vector3>();
-    //public List<Vector3> p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24p, p25,
-    //p26, p28, p29, p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, p40, p41, p42, p43, p44, p45p, p46, p47, p48, p49, p50, p51, p52, p53,
-    //p54, p55, p56, p57, p58, p59, p60, p61, p62, p63, p64, p65, p66, p67, p68, p69, p70, p71, p72, p73, p74, p75, p76,
-    //p77, p78, p79, p80, p81 = new List<Vector3>();
+
 
     // 블럭들의 중간 위치값을 모두 추출하여 리스트에 담음. 이것이 블럭당 건물들의 생성 위치 중심지점이 됨 
     public List<Vector3> spawnLocations = new List<Vector3>();
 
+    // 생성된 블럭들의 개별 면적 저장 리스트
+    public List<float> allAreaValueList = new List<float>();
+
+    // 블럭에 빌딩생성을 위한 면적범위의 원 반지름 값 리스트로 81개가 되어야 spawnBD_Raius_All
+    public List<float>  spawnBD_Raius_All = new List<float>();
+
+
 
     public void StartSpawn()
     {
-        // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
+        // 빌딩이 위치할 지점의 중심지점값들을 계산 > spawnLocations  리스트로 모두 추출 81개임
         SpawnPos_FindIntersection();
 
-        //Debug.Log("Start spawn building");
+
         if (!isSpawn) // 즉, 스폰되어 있지 않았다면 스폰한다.
         {
-            Debug.Log("Start spawn building");
+            Debug.Log("Start!");
             for (int j = 0; j <= maxBuilding; j++)
             {
                 spawnTimer += Time.deltaTime;
@@ -61,6 +66,7 @@ public class SpawnBuilding : MonoBehaviour
                 if (spawnTimer <= spawnFrequency)
                 {
                     Spawn();
+
                     spawnTimer = 0f; // Reset
                 }
             }
@@ -82,7 +88,7 @@ public class SpawnBuilding : MonoBehaviour
         SpawnPos_FindIntersection();
 
 
-        Debug.Log("Building Activated");
+        Debug.Log("Respawn! All Building reActivated");
 
         for (int i = 0; i < buildingPrebs.Count; i++)
         {
@@ -105,6 +111,9 @@ public class SpawnBuilding : MonoBehaviour
 
     private void Spawn()
     {
+        // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
+        //SpawnPos_FindIntersection();
+
 
         // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 리스트 선언으로 조합을 만드는 함수 개발해야 함
 
@@ -113,186 +122,363 @@ public class SpawnBuilding : MonoBehaviour
 
         GameObject SelectedPrefab = spawnPrefab[selection];
 
+
         // 빌딩생성
         if (buildingCount <= maxBuilding)
         {
-            // 생성위치 추출
+            Debug.Log("spawn building!");
+
+            ////생성위치 추출 --------------------------------------->>>> 여기서부터 디버깅 해야함!
+            Debug.Log("spawnLocations count :" + spawnLocations.Count); // 81개의 중심위치
+
+            int k = 0;
             foreach (Vector3 spPosition in spawnLocations)
             {
-                Vector3 spawnPos = spPosition;
+                //Debug.Log("spPosition :" + spPosition);
+                //spPosition-- > 4지점의 중심 위치값을 하나로 range 범위를 만들어서 빌딩을 하나 스폰해본다. 범위안에 있을때만 생성하고, 아니면 다시 반복생성
 
-                GameObject SpawnInstance = Instantiate(SelectedPrefab, spawnPos, Quaternion.identity);
+                // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
+                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[0] * 2;
+                Vector3 rangePos = spPosition + new Vector3(randPos.x, 0, randPos.y);
 
-                // Move new object to the calculated spawn location
-                SpawnInstance.transform.position = spawnPos;
 
-                // 생성한 빌딩을 리스트에 등록해서 추척관리할 거임
-                buildingPrebs.Add(SpawnInstance);
+                // 그 위치가 4각형 안에 있는지 체크하기
+                Vector3[] interSecpos_ = new Vector3[4];
+
+                interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
+                interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k].y, interSecPos[k].z);
+                interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k].y, interSecPos[k].z);
+                interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k].y, interSecPos[k].z);
+
+                if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성  ---------------???? 수정해야 
+                {
+                    //GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
+
+                    //Debug.Log("BD is spawned in Block");
+
+                    //// Move new object to the calculated spawn location
+                    //SpawnInstance.transform.position = rangePos;
+
+                    //// 생성한 빌딩을 리스트에 등록해서 추척관리할 거임
+                    //buildingPrebs.Add(SpawnInstance);
+
+                    continue;
+                }
+                else {
+                    Debug.Log("BD is not spawned in Block");
+
+
+
+                    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
+
+                    Debug.Log("BD is spawned in Block");
+
+                    // Move new object to the calculated spawn location
+                    SpawnInstance.transform.position = rangePos;
+
+                    // 생성한 빌딩을 리스트에 등록해서 추척관리할 거임
+                    buildingPrebs.Add(SpawnInstance);
+
+
+
+
+                }
+
+                k += 1;
+
             }
+
 
             buildingCount += 1;
-        }
 
+        }
     }
 
 
-    private Vector3 SpawnPosition()
-    {
-
-        // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
-        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
-        {
-            spawnPrefabs.Add(spawnp);
-        }
-
-        lineStart = spawnPrefabs[0].transform;
-        lineEnd = spawnPrefabs[99].transform;
-
-
-        // Get Value Ranges along the line (x, y, z)
-        float xRange = lineEnd.position.x - lineStart.position.x;
-        float yRange = lineEnd.position.y - lineStart.position.y;
-        float zRange = lineEnd.position.z - lineStart.position.z;
-
-        Vector3 spawnLocation = new Vector3(lineStart.position.x + (xRange * UnityEngine.Random.value),
-                                            lineStart.position.y + (yRange * UnityEngine.Random.value),
-                                            lineStart.position.z + (zRange * UnityEngine.Random.value));
-        return spawnLocation;
-    }
-
-
-
-    // Find the intersection of two lines
-    static Vector3 FindIntersection(Vector3 s1, Vector3 e1, Vector3 s2, Vector3 e2)
-    {
-        float a1 = e2.z - s1.z;
-        float b1 = s1.x - e2.x;
-        float c1 = a1 * s1.x + b1 * s1.z;
-
-        float a2 = e1.z - s2.z;
-        float b2 = s2.x - e1.x;
-        float c2 = a2 * s2.x + b2 * s2.z;
-
-        float delta = a1 * b2 - a2 * b1;
-        //If lines are parallel, the result will be (NaN, NaN).
-        return delta == 0 ? new Vector3(float.NaN, float.NaN, float.NaN)
-            :new Vector3 ((b2 * c1 - b1 * c2) / delta, 0, (a1 * c2 - a2 * c1) / delta);
-    }
-
-
-
-
-
-    //// Find the intersection of two lines
-    //static Vector3 FindIntersection(Vector3 s1, Vector3 e1, Vector3 s2, Vector3 e2)
-    //{
-    //    float a1 = e1.y - s1.y;
-    //    float b1 = s1.x - e1.x;
-    //    float c1 = a1 * s1.x + b1 * s1.y;
-
-    //    float a2 = e2.y - s2.y;
-    //    float b2 = s2.x - e2.x;
-    //    float c2 = a2 * s2.x + b2 * s2.y;
-
-    //    float delta = a1 * b2 - a2 * b1;
-    //    //If lines are parallel, the result will be (NaN, NaN).
-    //    return delta == 0 ? new Vector3(float.NaN, float.NaN, float.NaN)
-    //        : new Vector3((b2 * c1 - b1 * c2) / delta, (a1 * c2 - a2 * c1) / delta);
-    //}
-
-
-
-
-    /// <summary>
-    ///  이 문제를 해결해ㅑㅇ 함!!!!!!!
-    /// </summary>
-    // ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection Parameter name: index
-
-
-
-
-
-
-    public void SpawnPos_FindIntersection()
-    {
-
-        // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
-        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
-        {
-            spawnPrefabs.Add(spawnp);
-            //Debug.Log("check 1 !");
-        }
-
-        // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 계산해야 ㅎ
-        for (int i = 0; i < spawnPrefabs.Count - 11; i++)
-        {
-
-            if (i == 9 || i == 19 || i == 29 || i == 39 || i == 49 || i == 59 || i == 69 || i == 79 || i == 89 || i == 99 || i == 109)
-            {
-                continue;
-            }
-
-            interSecPos.Add(spawnPrefabs[i].transform.position);
-            interSecPos.Add(spawnPrefabs[i + 1].transform.position);
-            interSecPos.Add(spawnPrefabs[i + 10].transform.position);
-            interSecPos.Add(spawnPrefabs[i + 11].transform.position);
-
-        }
-
-        Debug.Log(interSecPos.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문ㅇ
-        // 4개의 지점으로 블럭조합 리스트가 완성되면 (,,,)의 리스트로 그룹데이터 생성됨, 이것을 가지고 중간지점  == > interSecPos
-
-        // 지도상의 블럭 즉, 4지점을 추출하기 위한 gameobject르 순서대로 묶은 리스트 값 선언 
-        int k = 0;
-        for (int i = 0; i <= interSecPos.Count/4-1; i++)
-        {
-            Debug.Log("interSecPos[k]" + interSecPos[k]); // 위치값이 잘 나옴
-            Debug.Log("interSecPos[k]" + interSecPos[k+1]);
-            Debug.Log("interSecPos[k]" + interSecPos[k+2]);
-            Debug.Log("interSecPos[k]" + interSecPos[k+3]);
-            Vector3 spawnLocation = FindIntersection(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2], interSecPos[k + 3]);
-
-            spawnLocations.Add(spawnLocation);
-
-            //Debug.Log("FindIntersection : " + spawnLocation);
-
-            k += 4;
-        }
-
-
-
-
-
-
-
-        //for (int i = 0; i <= blocks.Count; i += 4)
+        //private Vector3 SpawnArea()
         //{
+        //    // if 랜덤으로 instantiate한 빌딩이 폴리곤 안에 있다면 ok, else: re instantiate~ 그리하여 모든 빌딩이 블럭안에 있을때까지 생성한다.
+        //    // 생성후 블럭 면적과 빌딩의 면적을 비교 계산하여 빌딩면적 < 블럭면적 까지만 instantiate하면 됨
+        //    // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
+        //    SpawnPos_FindIntersection();
 
-        //    Vector3 spawnLocation = FindIntersection(blocks[i].transform.position, blocks[i + 1].transform.position, blocks[i + 2].transform.position, blocks[i + 3].transform.position);
+        //    for (int i = 0; i <= spawnLocations.Count; i++)
+        //    {
+        //        Vector3[] interSecpos_ = new Vector3[4];
 
-        //    spawnLocations.Add(spawnLocation);
+        //        interSecpos_[0] = new Vector3(interSecPos[i].x, interSecPos[i].y, interSecPos[i].z);
+        //        interSecpos_[1] = new Vector3(interSecPos[i+1].x, interSecPos[i].y, interSecPos[i].z);
+        //        interSecpos_[2] = new Vector3(interSecPos[i+2].x, interSecPos[i].y, interSecPos[i].z);
+        //        interSecpos_[3] = new Vector3(interSecPos[i+3].x, interSecPos[i].y, interSecPos[i].z);
 
-        //    Debug.Log("FindIntersection : " + spawnLocation);
+        //        if (IsPointInPolygon(spawnLocations[i], interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면
+        //        {
+
+        //        }
+
+
+        //    }
+
+
         //}
 
-        // 블럭당 생성위치를 저장한 리스트, 값은 총 81개임 
-        //return spawnLocations;
-
-
-        // 백업
-        //// Find the intersection of two lines--2 
-        //// 두 선이 교차하는 지점 추출, 이 지점이 spawn base position이 된다. 그리고 네 지점의 면적을 구해야 한다. 그 안에 스폰이 되는지 체크하여 안에 있으면 스폰하고, 밖이면 스폰X
-        //// 이제 아래 4 지점의 값을 gioPos에서 추출해서 넣으면 중심위치값을 찾아낼 거임. 거기서 스폰하면 됨. 
-        //Vector3 spawnLocation = FindIntersection(new Vector3(4, 0, 0), new Vector3(6, 10, 0), new Vector3(0, 3, 0), new Vector3(10, 7, 0)); // 테스트 성
-        //Debug.Log("FindIntersection : " + spawnLocation);
-        //// 평행성선일 경우는 nan, nan 출력 
-        ////Debug.Log("FindIntersection : " + FindIntersection(p(0f, 0f), p(1f, 1f), p(1f, 2f), p(4f, 5f)));
-        ////
-        //return spawnLocation;
 
 
 
-    }
 
 
+        //private Vector3 SpawnPosition()
+        //{
+        //    // spawnLoacations에서 하나의 지점을 꺼내서, 가장 멀리 있는 4개의 지점중 하나를 선태해서 스폰의 range를 정해야 됨. 
+
+        //    lineStart = spawnPrefabs[0].transform;
+        //    lineEnd = spawnPrefabs[99].transform;
+
+
+        //    // Get Value Ranges along the line (x, y, z)
+        //    float xRange = lineEnd.position.x - lineStart.position.x;
+        //    float yRange = lineEnd.position.y - lineStart.position.y;
+        //    float zRange = lineEnd.position.z - lineStart.position.z;
+
+        //    Vector3 spawnLocation = new Vector3(lineStart.position.x + (xRange * UnityEngine.Random.value),
+        //                                        lineStart.position.y + (yRange * UnityEngine.Random.value),
+        //                                        lineStart.position.z + (zRange * UnityEngine.Random.value));
+        //    return spawnLocation;
+        //}
+
+
+
+
+        //private Vector3 SpawnPosition()
+        //{
+
+        //    // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
+        //    foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
+        //    {
+        //        spawnPrefabs.Add(spawnp);
+        //    }
+
+        //    lineStart = spawnPrefabs[0].transform;
+        //    lineEnd = spawnPrefabs[99].transform;
+
+
+        //    // Get Value Ranges along the line (x, y, z)
+        //    float xRange = lineEnd.position.x - lineStart.position.x;
+        //    float yRange = lineEnd.position.y - lineStart.position.y;
+        //    float zRange = lineEnd.position.z - lineStart.position.z;
+
+        //    Vector3 spawnLocation = new Vector3(lineStart.position.x + (xRange * UnityEngine.Random.value),
+        //                                        lineStart.position.y + (yRange * UnityEngine.Random.value),
+        //                                        lineStart.position.z + (zRange * UnityEngine.Random.value));
+        //    return spawnLocation;
+        //}
+
+
+
+        // Find the intersection of two lines - 빌딩생성을 위한 블럭당 지형의 중심위치 추출
+        static Vector3 FindIntersection(Vector3 s1, Vector3 e1, Vector3 s2, Vector3 e2)
+        {
+            float a1 = e2.z - s1.z;
+            float b1 = s1.x - e2.x;
+            float c1 = a1 * s1.x + b1 * s1.z;
+
+            float a2 = e1.z - s2.z;
+            float b2 = s2.x - e1.x;
+            float c2 = a2 * s2.x + b2 * s2.z;
+
+            float delta = a1 * b2 - a2 * b1;
+            //If lines are parallel, the result will be (NaN, NaN).
+            return delta == 0 ? new Vector3(float.NaN, float.NaN, float.NaN)
+                : new Vector3((b2 * c1 - b1 * c2) / delta, 0, (a1 * c2 - a2 * c1) / delta);
+        }
+
+
+
+
+        // 생성된 gioPos의 위치값을 추출하여 블럭으로 재구성(1block = 4giPos)으로 총 100개의 포인트가 81개의 블럭으로 구성되고, 각 블럭의 중심위치를 추출하여 (중심점에서 빌딩을 생성)
+        public void SpawnPos_FindIntersection()
+        {
+
+            // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
+            foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
+            {
+                spawnPrefabs.Add(spawnp);
+                //Debug.Log("check 1 !");
+            }
+
+            // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 계산해야 ㅎ
+            for (int i = 0; i < spawnPrefabs.Count - 11; i++)
+            {
+
+                if (i == 9 || i == 19 || i == 29 || i == 39 || i == 49 || i == 59 || i == 69 || i == 79 || i == 89 || i == 99 || i == 109)
+                {
+                    continue;
+                }
+
+                interSecPos.Add(spawnPrefabs[i].transform.position);
+                interSecPos.Add(spawnPrefabs[i + 1].transform.position);
+                interSecPos.Add(spawnPrefabs[i + 10].transform.position);
+                interSecPos.Add(spawnPrefabs[i + 11].transform.position);
+
+            }
+
+            Debug.Log(interSecPos.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
+                                          // 4개의 지점으로 블럭조합 리스트가 완성되면 (,,,)의 리스트로 그룹데이터 생성됨, 이것을 가지고 중간지점  == > interSecPos
+
+            // 지도상의 블럭 즉, 4지점을 추출하기 위한 gameobject르 순서대로 묶은 리스트 값 선언 
+            int k = 0;
+            for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
+            {
+                //Debug.Log("interSecPos[k]" + interSecPos[k]); // 위치값이 잘 나옴
+                //Debug.Log("interSecPos[k]" + interSecPos[k+1]);
+                //Debug.Log("interSecPos[k]" + interSecPos[k+2]);
+                //Debug.Log("interSecPos[k]" + interSecPos[k+3]);
+                Vector3 spawnLocation = FindIntersection(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2], interSecPos[k + 3]);
+
+                // 생성위치추출로 81개의 블럭 중심위치를 리스트로 저장
+                spawnLocations.Add(spawnLocation);
+
+                // 생성위치 + 블럭의 4 지점위치 데이터를 바탕으로 블럭의 면적을 계산하고, 면적안에 빌딩을 스폰(면적안에서만 빌딩을 물리적을 위치시켜야 함), 면적보다크면 빌딩스폰 정지
+                // 벡터 연산이기 때문에 삼각형으로 나누어서 면적을 계산
+                float area1 = Area_tri(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2]);
+                float area2 = Area_tri(interSecPos[k + 1], interSecPos[k + 3], interSecPos[k + 2]);
+                // 블록의 면적 : 기본크기는 1임, gioPos 단위가 1이니까. 
+                float areaOfBlock = area1 + area2;
+                //Debug.Log("블럭당 면적 : " + areaOfBlock);
+
+                //블럭당 면적으로 리스트에 저장할 것
+                allAreaValueList.Add(areaOfBlock);
+
+                //빌딩의 스폰 범위를 계산하기 위한 중심 vs 4개 지점의 최대거리값 계산하기
+                List<float> LonggistDst = new List<float>();
+
+                float D1 = Vector3.Distance(spawnLocation, interSecPos[k]);
+                LonggistDst.Add(D1);
+                //Debug.Log("D1 :" + D1);
+                float D2 = Vector3.Distance(spawnLocation, interSecPos[k + 1]);
+                LonggistDst.Add(D2);
+                float D3 = Vector3.Distance(spawnLocation, interSecPos[k + 2]);
+                LonggistDst.Add(D3);
+
+                float D4 = Vector3.Distance(spawnLocation, interSecPos[k + 3]);
+                LonggistDst.Add(D4);
+
+                // 가장큰 값 취득
+                //Debug.Log("Max : " + LonggistDst.Max());
+                // 스폰생성의 반지름 개별값
+                float spawnBD_Raius = LonggistDst.Max();
+                // 리스트로 저spawnBD_Raius_All
+                spawnBD_Raius_All.Add(spawnBD_Raius); 
+
+
+
+        k += 4;
+            }
+
+
+        }
+
+
+        // 벡터 3 지점의 내적 계산
+        static float Area_tri(Vector3 a, Vector3 b, Vector3 c)
+        {
+            Vector3 side1;
+            side1 = b - a;
+
+            Vector3 side2;
+            side2 = c - a;
+
+            Vector3 prep;
+            prep = Vector3.Cross(side1, side2);
+
+            float perpLength;
+            perpLength = prep.magnitude;
+
+            float areaResult = perpLength / 2;
+
+            return areaResult;
+
+        }
+
+
+
+        /// <summary>
+        /// check in or out
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="polygon"></param>
+        /// <returns></returns>
+        ///
+
+
+
+        public bool IsPointInPolygon(Vector3 p, Vector3[] polygon)
+        {
+            double minX = polygon[0].x;
+            double maxX = polygon[0].x;
+            double minZ = polygon[0].z;
+            double maxZ = polygon[0].z;
+            for (int i = 1; i < polygon.Length; i++)
+            {
+                Vector3 q = polygon[i];
+                minX = System.Math.Min(q.x, minX);
+                maxX = System.Math.Max(q.x, maxX);
+                minZ = System.Math.Min(q.z, minZ);
+                maxZ = System.Math.Max(q.z, maxZ);
+            }
+
+            if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ)
+            {
+                return false;
+            }
+
+            bool inside = false;
+            for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+            {
+                if ((polygon[i].z > p.z) != (polygon[j].z > p.z) &&
+                     p.x < (polygon[j].x - polygon[i].x) * (p.z - polygon[i].z) / (polygon[j].z - polygon[i].z) + polygon[i].z)
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
+
+
+
+        //public bool IsPointInPolygon(Point p, Point[] polygon)
+        //{
+        //    double minX = polygon[0].X;
+        //    double maxX = polygon[0].X;
+        //    double minY = polygon[0].Y;
+        //    double maxY = polygon[0].Y;
+        //    for (int i = 1; i < polygon.Length; i++)
+        //    {
+        //        Point q = polygon[i];
+        //        minX = System.Math.Min(q.X, minX);
+        //        maxX = System.Math.Max(q.X, maxX);
+        //        minY = System.Math.Min(q.Y, minY);
+        //        maxY = System.Math.Max(q.Y, maxY);
+        //    }
+
+        //    if (p.X < minX || p.X > maxX || p.Y < minY || p.Y > maxY)
+        //    {
+        //        return false;
+        //    }
+
+        //    bool inside = false;
+        //    for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+        //    {
+        //        if ((polygon[i].Y > p.Y) != (polygon[j].Y > p.Y) &&
+        //             p.X < (polygon[j].X - polygon[i].X) * (p.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X)
+        //        {
+        //            inside = !inside;
+        //        }
+        //    }
+
+        //    return inside;
+        //}
+
+   
 }
