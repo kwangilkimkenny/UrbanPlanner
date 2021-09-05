@@ -112,86 +112,76 @@ public class SpawnBuilding : MonoBehaviour
     private void Spawn()
     {
         // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
-        //SpawnPos_FindIntersection();
-
 
         // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 리스트 선언으로 조합을 만드는 함수 개발해야 함
 
-        // 빌딩 랜덤으로 추출
+        // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
         int selection = Random.Range(0, spawnPrefab.Length);
 
         GameObject SelectedPrefab = spawnPrefab[selection];
 
 
-        // 빌딩생성
-        if (buildingCount <= maxBuilding)
+
+        Debug.Log("spawn building!");
+
+        ////생성위치 추출 -------------------------------------->>>> 여기서부터 디버깅 해야함!
+        Debug.Log("spawnLocations count :" + spawnLocations.Count); // 81개의 중심위치
+
+
+        int k = 0;
+        foreach (Vector3 spPosition in spawnLocations)
         {
-            Debug.Log("spawn building!");
+            //Debug.Log("spPosition :" + spPosition);
+            //spPosition-- > 4지점의 중심 위치값을 하나로 range 범위를 만들어서 빌딩을 하나 스폰해본다. 범위안에 있을때만 생성하고, 아니면 다시 반복생성
 
-            ////생성위치 추출 --------------------------------------->>>> 여기서부터 디버깅 해야함!
-            Debug.Log("spawnLocations count :" + spawnLocations.Count); // 81개의 중심위치
+  
+            
+            // 그 위치가 4각형 안에 있는지 체크하기
+            Vector3[] interSecpos_ = new Vector3[4];
 
-            int k = 0;
-            foreach (Vector3 spPosition in spawnLocations)
+            interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
+            interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k + 1].y, interSecPos[k + 1].z);
+            interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k + 2].y, interSecPos[k + 2].z);
+            interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
+
+
+            int SpawnedBD = 0;
+            while (SpawnedBD < maxBuilding) // 10개의 빌딩이 10개가 생성될때까지 계속 반복
             {
-                //Debug.Log("spPosition :" + spPosition);
-                //spPosition-- > 4지점의 중심 위치값을 하나로 range 범위를 만들어서 빌딩을 하나 스폰해본다. 범위안에 있을때만 생성하고, 아니면 다시 반복생성
+
+                if (SpawnedBD == 10) break;
 
                 // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[0] * 2;
+                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[0];
                 Vector3 rangePos = spPosition + new Vector3(randPos.x, 0, randPos.y);
-
-
-                // 그 위치가 4각형 안에 있는지 체크하기
-                Vector3[] interSecpos_ = new Vector3[4];
-
-                interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
-                interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k].y, interSecPos[k].z);
-                interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k].y, interSecPos[k].z);
-                interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k].y, interSecPos[k].z);
 
                 if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성  ---------------???? 수정해야 
                 {
-                    //GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
-
-                    //Debug.Log("BD is spawned in Block");
-
-                    //// Move new object to the calculated spawn location
-                    //SpawnInstance.transform.position = rangePos;
-
-                    //// 생성한 빌딩을 리스트에 등록해서 추척관리할 거임
-                    //buildingPrebs.Add(SpawnInstance);
-
-                    continue;
-                }
-                else {
-                    Debug.Log("BD is not spawned in Block");
-
-
 
                     GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
 
-                    Debug.Log("BD is spawned in Block");
+                    //Debug.Log("BD is spawned in Block");
 
                     // Move new object to the calculated spawn location
                     SpawnInstance.transform.position = rangePos;
 
-                    // 생성한 빌딩을 리스트에 등록해서 추척관리할 거임
-                    buildingPrebs.Add(SpawnInstance);
+                    SpawnedBD += 1;
 
+                }
+                else
+                {
+                    //Debug.Log("BD is not spawned in Block");
 
-
+                    if (SpawnedBD == 10) break;
 
                 }
 
+                buildingCount += 1;
                 k += 1;
-
             }
 
-
-            buildingCount += 1;
-
         }
+
     }
 
 
@@ -335,6 +325,7 @@ public class SpawnBuilding : MonoBehaviour
                 //Debug.Log("interSecPos[k]" + interSecPos[k+3]);
                 Vector3 spawnLocation = FindIntersection(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2], interSecPos[k + 3]);
 
+            Debug.Log("spawnLocation" + spawnLocation);
                 // 생성위치추출로 81개의 블럭 중심위치를 리스트로 저장
                 spawnLocations.Add(spawnLocation);
 
