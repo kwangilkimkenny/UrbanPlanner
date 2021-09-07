@@ -21,12 +21,14 @@ public class SpawnBuilding : MonoBehaviour
     // 불러올 게임오브젝트 리스트 선언
     private List<GameObject> spawnPrefabs = new List<GameObject>();
 
+    // spawnPrefabs_는 실제 spawn BD에서 게산할 값들임
+    public List<GameObject> spawnPrefabs_ = new List<GameObject>();
 
     // 생성한 빌딩의 게임오브젝트를 추적하시 위한 리스트 선언
     public List<GameObject> buildingPrebs = new List<GameObject>();
 
-    int maxBuilding = 15;
-    int buildingCount = 0;
+    public int maxBuilding = 5;
+    public int buildingCount = 0;
 
     // building이 스폰되어 있는가? 기본값은 안되어있다. 
     public bool isSpawn = false;
@@ -58,18 +60,25 @@ public class SpawnBuilding : MonoBehaviour
 
         if (!isSpawn) // 즉, 스폰되어 있지 않았다면 스폰한다.
         {
-            Debug.Log("Start!");
-            for (int j = 0; j <= maxBuilding; j++)
-            {
-                spawnTimer += Time.deltaTime;
+            //Debug.Log("Start!");
 
-                if (spawnTimer <= spawnFrequency)
-                {
-                    Spawn();
+            Spawn();
 
-                    spawnTimer = 0f; // Reset
-                }
-            }
+
+            //for (int j = 0; j <= maxBuilding; j++)
+            //{
+            //    spawnTimer += Time.deltaTime;
+
+            //    if (spawnTimer <= spawnFrequency)
+            //    {
+            //        Spawn();
+
+            //        spawnTimer = 1f; // Reset
+            //    }
+            //}
+
+
+
             // 스폰이 되면 true로 하고, else에서 ReSpawn을 실행하면 생성한 건물을 껐다 켰다 할 수 있음(재활용가능)
             isSpawn = true;
         }
@@ -115,153 +124,126 @@ public class SpawnBuilding : MonoBehaviour
 
         // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 리스트 선언으로 조합을 만드는 함수 개발해야 함
 
-        // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
-        int selection = Random.Range(0, spawnPrefab.Length);
-
-        GameObject SelectedPrefab = spawnPrefab[selection];
-
-
-
-        Debug.Log("spawn building!");
+        Debug.Log("Start spawn buildings!");
 
         ////생성위치 추출 -------------------------------------->>>> 여기서부터 디버깅 해야함!
         Debug.Log("spawnLocations count :" + spawnLocations.Count); // 81개의 중심위치
 
 
-        int k = 0;
-        foreach (Vector3 spPosition in spawnLocations)
+        //GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
+        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
         {
-            //Debug.Log("spPosition :" + spPosition);
-            //spPosition-- > 4지점의 중심 위치값을 하나로 range 범위를 만들어서 빌딩을 하나 스폰해본다. 범위안에 있을때만 생성하고, 아니면 다시 반복생성
+            spawnPrefabs_.Add(spawnp);
+            //Debug.Log("spawnPrefabs_ :" + spawnPrefabs_);
+        }
 
-  
-            
+
+        //Debug.Log("interSecPos.Count :" + interSecPos.Count);
+
+
+        int k = 0;
+        for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
+        {
+
+            //Debug.Log("interSecPos.Count -> i :" + i);
+            //Debug.Log("interSecPos.Count -> k :" + k);
+
             // 그 위치가 4각형 안에 있는지 체크하기
             Vector3[] interSecpos_ = new Vector3[4];
 
             interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
-            interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k + 1].y, interSecPos[k + 1].z);
-            interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k + 2].y, interSecPos[k + 2].z);
-            interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
+            //Debug.Log("interSecpos_[0]: " + interSecpos_[0]);
 
+            interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k + 1].y, interSecPos[k + 1].z);
+            //Debug.Log("interSecpos_[1]: " + interSecpos_[1]);
+
+            interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k + 2].y, interSecPos[k + 2].z);
+            //Debug.Log("interSecpos_[2]: " + interSecpos_[2]);
+
+            interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
+            //Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
+
+
+
+            //Debug.Log("spPosition :" + spPosition);
+            //spPosition-- > 4지점의 중심 위치값을 하나로 range 범위를 만들어서 빌딩을 하나 스폰해본다. 범위안에 있을때만 생성하고, 아니면 다시 반복생성
+
+            //Debug.Log("spawnBD_Raius_All[i]" + spawnBD_Raius_All[i]);
+            //Debug.Log("spawnLocations[i]" + spawnLocations[i]);
 
             int SpawnedBD = 0;
+
+
             while (SpawnedBD < maxBuilding) // 10개의 빌딩이 10개가 생성될때까지 계속 반복
             {
 
-                if (SpawnedBD == 10) break;
+                //Debug.Log("Contructing Buildings.....");
+
+
+                // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
+                int selection = Random.Range(0, spawnPrefab.Length);
+
+                GameObject SelectedPrefab = spawnPrefab[selection];
+
+
+
+
+
+                if (SpawnedBD == 5) break;
 
                 // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[0];
-                Vector3 rangePos = spPosition + new Vector3(randPos.x, 0, randPos.y);
+                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
+                Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
 
-                if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성  ---------------???? 수정해야 
-                {
 
-                    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
 
-                    //Debug.Log("BD is spawned in Block");
+                GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
 
-                    // Move new object to the calculated spawn location
-                    SpawnInstance.transform.position = rangePos;
+                //Debug.Log("BD is spawned in Block");
 
-                    SpawnedBD += 1;
+                // Move new object to the calculated spawn location
+                SpawnInstance.transform.position = rangePos;
 
-                }
-                else
-                {
-                    //Debug.Log("BD is not spawned in Block");
+                SpawnedBD += 1;
 
-                    if (SpawnedBD == 10) break;
 
-                }
 
-                buildingCount += 1;
-                k += 1;
+
+
+                // -----------------------------------------------------------------------------------------
+
+                // * 아래 로직은 계산 시간이 너무 많이 걸림 * //  --> meshRenderer에 스폰하는 방법을 고려해보기로 
+
+
+                //if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성
+                //{
+
+                //    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
+
+                //    //Debug.Log("BD is spawned in Block");
+
+                //    // Move new object to the calculated spawn location
+                //    SpawnInstance.transform.position = rangePos;
+
+                //    SpawnedBD += 1;
+
+                //}
+                //else
+                //{
+                //    //Debug.Log("BD is not spawned in Block");
+
+                //    if (SpawnedBD == 5) break;
+
+                //}
+                // -----------------------------------------------------------------------------------------
+
             }
 
+
+            k += 4;
         }
 
     }
-
-
-        //private Vector3 SpawnArea()
-        //{
-        //    // if 랜덤으로 instantiate한 빌딩이 폴리곤 안에 있다면 ok, else: re instantiate~ 그리하여 모든 빌딩이 블럭안에 있을때까지 생성한다.
-        //    // 생성후 블럭 면적과 빌딩의 면적을 비교 계산하여 빌딩면적 < 블럭면적 까지만 instantiate하면 됨
-        //    // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
-        //    SpawnPos_FindIntersection();
-
-        //    for (int i = 0; i <= spawnLocations.Count; i++)
-        //    {
-        //        Vector3[] interSecpos_ = new Vector3[4];
-
-        //        interSecpos_[0] = new Vector3(interSecPos[i].x, interSecPos[i].y, interSecPos[i].z);
-        //        interSecpos_[1] = new Vector3(interSecPos[i+1].x, interSecPos[i].y, interSecPos[i].z);
-        //        interSecpos_[2] = new Vector3(interSecPos[i+2].x, interSecPos[i].y, interSecPos[i].z);
-        //        interSecpos_[3] = new Vector3(interSecPos[i+3].x, interSecPos[i].y, interSecPos[i].z);
-
-        //        if (IsPointInPolygon(spawnLocations[i], interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면
-        //        {
-
-        //        }
-
-
-        //    }
-
-
-        //}
-
-
-
-
-
-
-        //private Vector3 SpawnPosition()
-        //{
-        //    // spawnLoacations에서 하나의 지점을 꺼내서, 가장 멀리 있는 4개의 지점중 하나를 선태해서 스폰의 range를 정해야 됨. 
-
-        //    lineStart = spawnPrefabs[0].transform;
-        //    lineEnd = spawnPrefabs[99].transform;
-
-
-        //    // Get Value Ranges along the line (x, y, z)
-        //    float xRange = lineEnd.position.x - lineStart.position.x;
-        //    float yRange = lineEnd.position.y - lineStart.position.y;
-        //    float zRange = lineEnd.position.z - lineStart.position.z;
-
-        //    Vector3 spawnLocation = new Vector3(lineStart.position.x + (xRange * UnityEngine.Random.value),
-        //                                        lineStart.position.y + (yRange * UnityEngine.Random.value),
-        //                                        lineStart.position.z + (zRange * UnityEngine.Random.value));
-        //    return spawnLocation;
-        //}
-
-
-
-
-        //private Vector3 SpawnPosition()
-        //{
-
-        //    // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
-        //    foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
-        //    {
-        //        spawnPrefabs.Add(spawnp);
-        //    }
-
-        //    lineStart = spawnPrefabs[0].transform;
-        //    lineEnd = spawnPrefabs[99].transform;
-
-
-        //    // Get Value Ranges along the line (x, y, z)
-        //    float xRange = lineEnd.position.x - lineStart.position.x;
-        //    float yRange = lineEnd.position.y - lineStart.position.y;
-        //    float zRange = lineEnd.position.z - lineStart.position.z;
-
-        //    Vector3 spawnLocation = new Vector3(lineStart.position.x + (xRange * UnityEngine.Random.value),
-        //                                        lineStart.position.y + (yRange * UnityEngine.Random.value),
-        //                                        lineStart.position.z + (zRange * UnityEngine.Random.value));
-        //    return spawnLocation;
-        //}
 
 
 
@@ -325,7 +307,7 @@ public class SpawnBuilding : MonoBehaviour
                 //Debug.Log("interSecPos[k]" + interSecPos[k+3]);
                 Vector3 spawnLocation = FindIntersection(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2], interSecPos[k + 3]);
 
-            Debug.Log("spawnLocation" + spawnLocation);
+                //Debug.Log("spawnLocation" + spawnLocation);
                 // 생성위치추출로 81개의 블럭 중심위치를 리스트로 저장
                 spawnLocations.Add(spawnLocation);
 
@@ -361,11 +343,8 @@ public class SpawnBuilding : MonoBehaviour
                 // 리스트로 저spawnBD_Raius_All
                 spawnBD_Raius_All.Add(spawnBD_Raius); 
 
-
-
         k += 4;
             }
-
 
         }
 
@@ -393,83 +372,51 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
-        /// <summary>
-        /// check in or out
-        /// </summary>
-        /// <param name="p"></param>
-        /// <param name="polygon"></param>
-        /// <returns></returns>
-        ///
+    /// <summary>
+    /// check in or out
+    /// </summary>
+    /// <param name="p"></param>
+    /// <param name="polygon"></param>
+    /// <returns></returns>
+    ///
 
 
 
-        public bool IsPointInPolygon(Vector3 p, Vector3[] polygon)
+
+    public bool IsPointInPolygon(Vector3 p, Vector3[] polygon)
+    {
+        double minX = polygon[0].x;
+        double maxX = polygon[0].x;
+        double minZ = polygon[0].z;
+        double maxZ = polygon[0].z;
+        for (int i = 1; i < polygon.Length; i++)
         {
-            double minX = polygon[0].x;
-            double maxX = polygon[0].x;
-            double minZ = polygon[0].z;
-            double maxZ = polygon[0].z;
-            for (int i = 1; i < polygon.Length; i++)
-            {
-                Vector3 q = polygon[i];
-                minX = System.Math.Min(q.x, minX);
-                maxX = System.Math.Max(q.x, maxX);
-                minZ = System.Math.Min(q.z, minZ);
-                maxZ = System.Math.Max(q.z, maxZ);
-            }
-
-            if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ)
-            {
-                return false;
-            }
-
-            bool inside = false;
-            for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
-            {
-                if ((polygon[i].z > p.z) != (polygon[j].z > p.z) &&
-                     p.x < (polygon[j].x - polygon[i].x) * (p.z - polygon[i].z) / (polygon[j].z - polygon[i].z) + polygon[i].z)
-                {
-                    inside = !inside;
-                }
-            }
-
-            return inside;
+            Vector3 q = polygon[i];
+            minX = System.Math.Min(q.x, minX);
+            maxX = System.Math.Max(q.x, maxX);
+            minZ = System.Math.Min(q.z, minZ);
+            maxZ = System.Math.Max(q.z, maxZ);
         }
 
+        if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ)
+        {
+            return false;
+        }
+
+        bool inside = false;
+        for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+        {
+            if ((polygon[i].z > p.z) != (polygon[j].z > p.z) &&
+                 p.x < (polygon[j].x - polygon[i].x) * (p.z - polygon[i].z) / (polygon[j].z - polygon[i].z) + polygon[i].z)
+            {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
 
 
-        //public bool IsPointInPolygon(Point p, Point[] polygon)
-        //{
-        //    double minX = polygon[0].X;
-        //    double maxX = polygon[0].X;
-        //    double minY = polygon[0].Y;
-        //    double maxY = polygon[0].Y;
-        //    for (int i = 1; i < polygon.Length; i++)
-        //    {
-        //        Point q = polygon[i];
-        //        minX = System.Math.Min(q.X, minX);
-        //        maxX = System.Math.Max(q.X, maxX);
-        //        minY = System.Math.Min(q.Y, minY);
-        //        maxY = System.Math.Max(q.Y, maxY);
-        //    }
 
-        //    if (p.X < minX || p.X > maxX || p.Y < minY || p.Y > maxY)
-        //    {
-        //        return false;
-        //    }
 
-        //    bool inside = false;
-        //    for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
-        //    {
-        //        if ((polygon[i].Y > p.Y) != (polygon[j].Y > p.Y) &&
-        //             p.X < (polygon[j].X - polygon[i].X) * (p.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X)
-        //        {
-        //            inside = !inside;
-        //        }
-        //    }
-
-        //    return inside;
-        //}
-
-   
 }

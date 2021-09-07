@@ -32,7 +32,7 @@ public class Check_in_out : MonoBehaviour
         foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos_test"))
         {
             interSecPos.Add(spawnp);
-            Debug.Log("get GameObject of GioPos_test!");
+            //Debug.Log("get GameObject of GioPos_test!");
         }
 
         int k = 0;

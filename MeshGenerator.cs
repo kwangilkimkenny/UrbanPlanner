@@ -8,112 +8,133 @@ using System;
 
 public class MeshGenerator : MonoBehaviour
 {
-    // Define  our world size
-    public int Worldx;
-    public int Worldz;
 
     //메쉬생성을 위한 선언
-    private Mesh mesh;
-
-    private int[] triangles;
-    private Vector3[] verticies;
+    public Mesh mesh;
 
 
+    public List<Mesh> meshes = new List<Mesh>();
 
-//// Find the intersection of two lines - 1
-//    static PointF FindIntersection(PointF s1, PointF e1, PointF s2, PointF e2)
-//    {
-//        float a1 = e1.Y - s1.Y;
-//        float b1 = s1.X - e1.X;
-//        float c1 = a1 * s1.X + b1 * s1.Y;
 
-//        float a2 = e2.Y - s2.Y;
-//        float b2 = s2.X - e2.X;
-//        float c2 = a2 * s2.X + b2 * s2.Y;
-
-//        float delta = a1 * b2 - a2 * b1;
-//        //If lines are parallel, the result will be (NaN, NaN).
-//        return delta == 0 ? new PointF(float.NaN, float.NaN)
-//            : new PointF((b2 * c1 - b1 * c2) / delta, (a1 * c2 - a2 * c1) / delta);
-//    }
+    // spawnPrefabs는 실제 spawn BD에서 게산할 값들임
+    public List<GameObject> spawnPrefabs = new List<GameObject>();
+    public List<GameObject> blocks = new List<GameObject>();
+    
 
 
 
 
-
-
-
-
-
-
-    void Start()
+    public void GetMeshGen()
     {
         // 메쉬 생성 
         mesh = new Mesh();
+        //mesh2 = new Mesh();
 
         // 메쉬의 메쉬필터 속성에 생한 메를 넣고 
         GetComponent<MeshFilter>().mesh = mesh;
+        //GetComponent<MeshFilter>().mesh = mesh2;
 
         // 메쉬 생성하고 
-        GenerateMesh(); 
+        GenerateMesh();
 
-        // 반복해서 그려주면 됨
-        UpdateMesh();
     }
+
+
+
+    void GetBlokPos()
+    {
+        //GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
+        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
+        {
+            spawnPrefabs.Add(spawnp);
+        }
+
+        Debug.Log("spawnPrefabs.Count :" + spawnPrefabs.Count); // 100
+
+
+        // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 계산해야 ㅎ
+        for (int i = 0; i < spawnPrefabs.Count - 11; i++)
+        {
+
+            if (i == 9 || i == 19 || i == 29 || i == 39 || i == 49 || i == 59 || i == 69 || i == 79 || i == 89 || i == 99 || i == 109)
+            {
+                continue;
+            }
+
+            blocks.Add(spawnPrefabs[i]);
+            blocks.Add(spawnPrefabs[i + 1]);
+            blocks.Add(spawnPrefabs[i + 10]);
+            blocks.Add(spawnPrefabs[i + 11]);
+
+        }
+
+        Debug.Log("blocks.Count" + blocks.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
+
+        
+    }
+
+
+
+
+
 
     void GenerateMesh()
     {
-        //// Find the intersection of two lines--2 >>> spawnBuilding에 이하 코드를 적용해보자
-        //// 두 선이 교차하는 지점 추출, 이 지점이 spawn base position이 된다. 그리고 네 지점의 면적을 구해야 한다. 그 안에 스폰이 되는지 체크하여 안에 있으면 스폰하고, 밖이면 스폰X
-        //Func<float, float, PointF> p = (x, y) => new PointF(x, y);
-        //Debug.Log("FindIntersection : " + FindIntersection(p(4f, 0f), p(6f, 10f), p(0f, 3f), p(10f, 7f)));
-        //// 평행성선일 경우는 nan, nan 출력 
-        ////Debug.Log("FindIntersection : " + FindIntersection(p(0f, 0f), p(1f, 1f), p(1f, 2f), p(4f, 5f)));
-        //// ---------------
+
+
+        Vector3[] verticies = new Vector3[12];
+        int[] triangles = new int[18];
 
 
 
+        //Debug.Log("4의 값이 총 81개의 블럭으로 324가 나오는가? :" + blocks.Count);
+        GetBlokPos();// 324개가 나옴!
+
+        verticies[0] = new Vector3(blocks[0].transform.position.x, 0, blocks[0].transform.position.z);
+        verticies[1] = new Vector3(blocks[1].transform.position.x, 0, blocks[1].transform.position.z);
+        verticies[2] = new Vector3(blocks[2].transform.position.x, 0, blocks[2].transform.position.z);
+        verticies[3] = new Vector3(blocks[3].transform.position.x, 0, blocks[3].transform.position.z);
+
+        verticies[4] = new Vector3(blocks[4].transform.position.x, 0, blocks[4].transform.position.z);
+        verticies[5] = new Vector3(blocks[5].transform.position.x, 0, blocks[5].transform.position.z);
+        verticies[6] = new Vector3(blocks[6].transform.position.x, 0, blocks[6].transform.position.z);
+        verticies[7] = new Vector3(blocks[7].transform.position.x, 0, blocks[7].transform.position.z);
 
 
-        triangles = new int[Worldx * Worldz * 6]; // 메쉬를 그리는데 삼각형 2개가 필요하고 2개의 삼각형을 그리는데 필요한 정수값은 6개임.  
-        verticies = new Vector3[(Worldx + 1) * (Worldz + 1)]; // 버텍스는 추가로 1개씩 축마다 필요함. 
+        verticies[8] = new Vector3(blocks[8].transform.position.x, 0, blocks[8].transform.position.z);
+        verticies[9] = new Vector3(blocks[9].transform.position.x, 0, blocks[9].transform.position.z);
+        verticies[10] = new Vector3(blocks[10].transform.position.x, 0, blocks[10].transform.position.z);
+        verticies[11] = new Vector3(blocks[11].transform.position.x, 0, blocks[11].transform.position.z);
 
-        for (int i = 0, z = 0; z <= Worldz; z++)
-        {
-            for (int x = 0; x <= Worldx; x++)
-            {
-                verticies[i] = new Vector3(x, 0, z);
-                i++;
-            }
-        }
 
-        int tris = 0;
-        int verts = 0;
+        //Debug.Log("verticies! : " + verticies[0]);
+        //Debug.Log("verticies 1! : " + verticies[1]);
+        //Debug.Log("verticies 2! : " + verticies[2]);
+        //Debug.Log("verticies 3! : " + verticies[3]);
 
-        for (int z = 0; z < Worldz; z++)
-        {
-            for(int x = 0; x < Worldx; x++)
-            {
-                // 메쉬 생성을 위한 삼각형 데이터 생성
-                triangles[tris + 0] = verts + 0;
-                triangles[tris + 1] = verts + Worldz + 1;
-                triangles[tris + 2] = verts + 1;
+        triangles[0] = 0;
+        triangles[1] = 1;
+        triangles[2] = 2;
+        triangles[3] = 1;
+        triangles[4] = 3;
+        triangles[5] = 2;
 
-                // 두 번재 삼각형 데이터 생성
-                triangles[tris + 3] = verts + 1;
-                triangles[tris + 4] = verts + Worldz + 1;
-                triangles[tris + 5] = verts + Worldz + 2;
+        triangles[6] = 1;
+        triangles[7] = 4;
+        triangles[8] = 3;
+        triangles[9] = 4;
+        triangles[10] = 5;
+        triangles[11] = 3;
 
-                verts++;
-                tris += 6;
+        triangles[12] = 4;
+        triangles[13] = 6;
+        triangles[14] = 5;
+        triangles[15] = 6;
+        triangles[16] = 5;
+        triangles[17] = 7;
 
-            }
-         verts++;
-        }
-    }
 
-    void UpdateMesh()
-    {
+
         mesh.Clear();
         // vertices 우선 생성
         mesh.vertices = verticies;
@@ -121,6 +142,12 @@ public class MeshGenerator : MonoBehaviour
         mesh.triangles = triangles;
         // 추출한 값에서 메수의 normal을 다시 계산 
         mesh.RecalculateNormals();
+    }
+
+
+    public void DeleteMesh()
+    {
+        mesh.Clear();
     }
 
 }
