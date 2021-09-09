@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 
 public class SpawnBuilding : MonoBehaviour
 
@@ -228,8 +229,9 @@ public class SpawnBuilding : MonoBehaviour
 
                 GameObject SelectedPrefab = spawnPrefab[selection];
 
-                if(SelectedPrefab != null) // 처음 생성한 빌딩을 Destroy했을 경우 SelectedPrefab의 값이 null 이기때문에 else 문으로 처리
+                if (SelectedPrefab != null) // 처음 생성한 빌딩을 Destroy했을 경우 SelectedPrefab의 값이 null 이기때문에 else 문으로 처리
                 {
+
                     if (SpawnedBD == 5) break;
 
                     // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
@@ -248,6 +250,48 @@ public class SpawnBuilding : MonoBehaviour
 
                     // add Buindling
                     SpawnedBD += 1;
+   
+
+
+
+
+                //if (SpawnedBD == 5) break;
+
+                //// 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
+                //Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
+                //Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
+
+
+
+                //if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성  ---------------???? 수정해야 
+                //{
+
+                //    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
+
+                //    // 계산 과부하 줄이기 위해 딜레
+                //    Thread.Sleep(1000);
+
+                //    // Debug.Log("BD is spawned in Block");
+
+                //    // Move new object to the calculated spawn location
+                //    SpawnInstance.transform.position = rangePos;
+
+                //    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
+                //    ConsBuildings.Add(SpawnInstance);
+
+                //    // add Buindling
+                //    SpawnedBD += 1;
+
+                //}
+
+
+                //else
+                //{
+                //    //Debug.Log("BD is not spawned in Block");
+
+                //    if (SpawnedBD == 5) break;
+
+                //}
 
                 } else // 새로 생성한 빌딩을 처리할 때
                 {
