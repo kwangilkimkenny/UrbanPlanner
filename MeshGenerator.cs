@@ -68,7 +68,7 @@ public class MeshGenerator : MonoBehaviour
 
         }
 
-        Debug.Log("blocks.Count" + blocks.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
+        Debug.Log("blocks.Count :" + blocks.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
 
         
     }

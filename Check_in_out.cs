@@ -12,7 +12,7 @@ public class Check_in_out : MonoBehaviour
     private List<GameObject> interSecPos = new List<GameObject>();
 
 
-    public int maxBuilding = 15;
+    public int maxBuilding = 30;
     public int buildingCount = 0;
 
     // Start is called before the first frame update
@@ -55,7 +55,7 @@ public class Check_in_out : MonoBehaviour
         while (SpawnedBD < maxBuilding) // 10개의 빌딩이 10개가 생성될때까지 계속 반복
         {
 
-            if (SpawnedBD == 10) break;
+            if (SpawnedBD == 20) break;
 
             // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
             Vector2 randPos = Random.insideUnitCircle * Radious_input;
@@ -78,7 +78,7 @@ public class Check_in_out : MonoBehaviour
             {
                 //Debug.Log("BD is not spawned in Block");
 
-                if (SpawnedBD == 10) break;
+                if (SpawnedBD == 20) break;
 
             }
 
