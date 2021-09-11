@@ -26,6 +26,11 @@ public class SpawnBuilding : MonoBehaviour
     public Text ContBDConuter;
 
 
+    // Block Indicator
+    [SerializeField]
+    public GameObject BlockIndicatorPrefab;
+
+
     // 불러올 게임오브젝트 리스트 선언
     private List<GameObject> spawnPrefabs = new List<GameObject>();
 
@@ -110,6 +115,11 @@ public class SpawnBuilding : MonoBehaviour
             Destroy(buildings);
         }
 
+        foreach (GameObject bloIndiCa in GameObject.FindGameObjectsWithTag("BlockIndicator"))
+        {
+            Destroy(bloIndiCa);
+        }
+
         spawnPrefabs_.Clear();
         spawnBD_Raius_All.Clear();
         ConsBuildings.Clear();
@@ -180,9 +190,13 @@ public class SpawnBuilding : MonoBehaviour
                 //Debug.Log("spawnLocations[i]  : " + spawnLocations[i]);
                 //Debug.Log("rangePos : " + rangePos);
 
+                // 블럭위치를 알려주는 인디케이터
+                GameObject BlockIndicator = Instantiate(BlockIndicatorPrefab, spawnLocations[i], Quaternion.identity);
+
+                BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, spawnLocations[i].y + 0.7f, spawnLocations[i].z);
 
                 // 블럭안에 빌딩 포함여부 체크 기능은 사용하지 않음 - 계산시간이 많이 걸려 성능 저하 원인
-      
+
                 GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
 
                 //Debug.Log("BD is spawned in Block - SpawnInstance : " + SpawnInstance);
