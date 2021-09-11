@@ -120,6 +120,10 @@ public class SpawnBuilding : MonoBehaviour
         blocks.Clear();
         spawnLocations.Clear();
 
+
+        ContBDConuter.text = "Buildings : " + ConsBuildings.Count.ToString();
+
+
     }
 
 
@@ -127,8 +131,8 @@ public class SpawnBuilding : MonoBehaviour
     private void Spawn()
     {
 
-        Debug.Log("Start spawn buildings!");
-     
+        Debug.Log("Contructing Buildings.....");
+
 
         int k = 0;
         int SpawnedBD = 0;
@@ -137,33 +141,32 @@ public class SpawnBuilding : MonoBehaviour
         {
 
             //Debug.Log("interSecPos.Count -> i :" + i); // 0,1,2,3,4,5
-            Debug.Log("interSecPos.Count -> k :" + k); // 0,4,8,12,16
+            //Debug.Log("interSecPos.Count -> k :" + k); // 0,4,8,12,16
 
             // get 4 gioPos points
             Vector3[] interSecpos_ = new Vector3[4];
 
             interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
-            Debug.Log("interSecpos_[0]: " + interSecpos_[0]);
+            //Debug.Log("interSecpos_[0]: " + interSecpos_[0]);
 
             interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k + 1].y, interSecPos[k + 1].z);
-            Debug.Log("interSecpos_[1]: " + interSecpos_[1]);
+            //Debug.Log("interSecpos_[1]: " + interSecpos_[1]);
 
             interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k + 2].y, interSecPos[k + 2].z);
-            Debug.Log("interSecpos_[2]: " + interSecpos_[2]);
+            //Debug.Log("interSecpos_[2]: " + interSecpos_[2]);
 
             interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
-            Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
+            //Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
 
 
-            // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
-            int selection = Random.Range(0, spawnPrefab.Length);
-
-            GameObject SelectedPrefab = spawnPrefab[selection];
 
             while (0 < allAreaValueList[i] - AddedBDArea) // 블럭 면적에서 추가된 빌딩들 면적을 빼다가 - 값이 나오기 전에 while 빠져나옴
             {
 
-                //Debug.Log("Contructing Buildings.....");
+                // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
+                int selection = Random.Range(0, spawnPrefab.Length);
+
+                GameObject SelectedPrefab = spawnPrefab[selection];
 
                 //Debug.Log("블럭의 면적 :" + allAreaValueList[i]);
                 //Debug.Log("추가된 빌딩들의 면적 :" + AddedBDArea);
@@ -211,35 +214,6 @@ public class SpawnBuilding : MonoBehaviour
             SpawnedBD = 0;
 
 
-
-            //while (SpawnedBD < maxBuilding)
-            //{
-            //    //if (allAreaValueList[i] > AddedBDArea) break;  // 빌딩은 블럭의 면적을 넘을 수없다.
-
-            //    // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
-            //    int selection_ = Random.Range(0, newBuildings.Length);
-
-            //    GameObject SelectedPrefab_ = newBuildings[selection_];
-
-            //    Instantiate(SelectedPrefab_);
-
-            //    // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-            //    Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
-            //    Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
-
-            //    GameObject SpawnInstance = Instantiate(SelectedPrefab_, rangePos, Quaternion.identity);
-
-            //    // Debug.Log("BD is spawned in Block");
-
-            //    // Move new object to the calculated spawn location
-            //    SpawnInstance.transform.position = rangePos;
-
-            //    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
-            //    ConsBuildings.Add(SpawnInstance);
-
-            //    // add Buindling
-            //    SpawnedBD += 1;
-            //}
 
             // -----------------------------------------------------------------------------------------
 
