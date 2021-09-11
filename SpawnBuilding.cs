@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
+using UnityEngine.UI;
 
 public class SpawnBuilding : MonoBehaviour
 
@@ -21,6 +22,9 @@ public class SpawnBuilding : MonoBehaviour
     public float spawnFrequency = 3f;
     public float spawnTimer = 2f;
 
+    // 생성한 빌딩 수  - > UI에 표시
+    public Text ContBDConuter;
+
 
     // 불러올 게임오브젝트 리스트 선언
     private List<GameObject> spawnPrefabs = new List<GameObject>();
@@ -36,7 +40,7 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
-    public int maxBuilding = 5;
+    public int maxBuilding = 50;
     public int buildingCount = 0;
 
     // building이 스폰되어 있는가? 기본값은 안되어있다. 
@@ -62,13 +66,16 @@ public class SpawnBuilding : MonoBehaviour
     private bool state = true;
 
 
+
+    // 빌딩 면적 접근하기 - 빌딩에 적용한 BuildingSize 클래스 접근
+    BuildingSize getBD_area;
+
+
+
     public void StartSpawn()
     {
 
 
-        //SpawnPos_FindIntersection();
-
-        //Spawn();
         ResetAllBuilding();
 
         if (state == true) // 즉, 스폰되어 있지 않았다면 스폰한다.
@@ -96,13 +103,6 @@ public class SpawnBuilding : MonoBehaviour
 
     public void ResetAllBuilding()
     {
-        //foreach (GameObject buildings in GameObject.FindGameObjectsWithTag("building"))
-        //{
-
-        //    buildings.SetActive(false);
-
-        //}
-
 
         foreach (GameObject buildings in GameObject.FindGameObjectsWithTag("building"))
         {
@@ -120,244 +120,153 @@ public class SpawnBuilding : MonoBehaviour
         blocks.Clear();
         spawnLocations.Clear();
 
-
-        Debug.Log("Buildings DeActivated");
-
     }
 
 
 
-    //private void ReSpawn()
-    //{
-
-    //    // 생성한 빌딩을 다시 가져와서 새로운 위치값을 계산해서 배치한다.
-
-    //    // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
-    //    SpawnPos_FindIntersection();
-
-    //    // 생성한 빌딩을 가져온다.
-    //    int reGetBDCount = 0;
-    //    foreach (GameObject bdittm in ConsBuildings)
-    //    {
-    //        if (reGetBDCount < maxBuilding * gio)
-    //        {
-    //            // Move spawned object to the recalculated spawn location
-    //            bdittm.transform.position = reGetRangePos;
-
-
-    //            bdittm.SetActive(true);
-    //        }
-
-
-    //    }
-
-
-
-    //    for (int i = 0; i < spawnBD_Raius_All.Count; i++) // 81개 구간의 다시 계산한 값을 가져와서 
-    //    {
-    //        // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-    //        Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
-    //        Vector3 reGetRangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
-    //    }
-
-
-
-
-    //    Debug.Log("Respawn! All Building reActivated");
-
-    //}
-
-
     private void Spawn()
     {
-        // 빌딩이 위치할 지점의 중심지점값 계산 > spawnLocations
-
-        // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 리스트 선언으로 조합을 만드는 함수 개발해야 함
 
         Debug.Log("Start spawn buildings!");
-
-        ////생성위치 추출 
-        Debug.Log("spawnLocations count :" + spawnLocations.Count); // 81개의 중심위치
-
-
-        //GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
-        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
-        {
-            spawnPrefabs_.Add(spawnp);
-            //Debug.Log("spawnPrefabs_ :" + spawnPrefabs_);
-        }
-
-
-        //Debug.Log("interSecPos.Count :" + interSecPos.Count);
-
+     
 
         int k = 0;
+        int SpawnedBD = 0;
+        float AddedBDArea = 0;
         for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
         {
 
-            //Debug.Log("interSecPos.Count -> i :" + i);
-            //Debug.Log("interSecPos.Count -> k :" + k);
+            //Debug.Log("interSecPos.Count -> i :" + i); // 0,1,2,3,4,5
+            Debug.Log("interSecPos.Count -> k :" + k); // 0,4,8,12,16
 
-            // 그 위치가 4각형 안에 있는지 체크하기
+            // get 4 gioPos points
             Vector3[] interSecpos_ = new Vector3[4];
 
             interSecpos_[0] = new Vector3(interSecPos[k].x, interSecPos[k].y, interSecPos[k].z);
-            //Debug.Log("interSecpos_[0]: " + interSecpos_[0]);
+            Debug.Log("interSecpos_[0]: " + interSecpos_[0]);
 
             interSecpos_[1] = new Vector3(interSecPos[k + 1].x, interSecPos[k + 1].y, interSecPos[k + 1].z);
-            //Debug.Log("interSecpos_[1]: " + interSecpos_[1]);
+            Debug.Log("interSecpos_[1]: " + interSecpos_[1]);
 
             interSecpos_[2] = new Vector3(interSecPos[k + 2].x, interSecPos[k + 2].y, interSecPos[k + 2].z);
-            //Debug.Log("interSecpos_[2]: " + interSecpos_[2]);
+            Debug.Log("interSecpos_[2]: " + interSecpos_[2]);
 
             interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
-            //Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
+            Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
 
 
-            int SpawnedBD = 0;
+            // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
+            int selection = Random.Range(0, spawnPrefab.Length);
 
+            GameObject SelectedPrefab = spawnPrefab[selection];
 
-            while (SpawnedBD < maxBuilding) // 빌딩이 maxBuilding 수량까지 생성될때까지 계속 반복
+            while (0 < allAreaValueList[i] - AddedBDArea) // 블럭 면적에서 추가된 빌딩들 면적을 빼다가 - 값이 나오기 전에 while 빠져나옴
             {
 
                 //Debug.Log("Contructing Buildings.....");
 
-
-                // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
-                int selection = Random.Range(0, spawnPrefab.Length);
-
-
-                GameObject SelectedPrefab = spawnPrefab[selection];
-
-                if (SelectedPrefab != null) // 처음 생성한 빌딩을 Destroy했을 경우 SelectedPrefab의 값이 null 이기때문에 else 문으로 처리
-                {
-
-                    if (SpawnedBD == 5) break;
-
-                    // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                    Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
-                    Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
-
-                    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
-
-                    // Debug.Log("BD is spawned in Block");
-
-                    // Move new object to the calculated spawn location
-                    SpawnInstance.transform.position = rangePos;
-
-                    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
-                    ConsBuildings.Add(SpawnInstance);
-
-                    // add Buindling
-                    SpawnedBD += 1;
-   
+                //Debug.Log("블럭의 면적 :" + allAreaValueList[i]);
+                //Debug.Log("추가된 빌딩들의 면적 :" + AddedBDArea);
 
 
+                // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
+                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
+                //Debug.Log("spawnBD_Raius_All[i]    : " + spawnBD_Raius_All[i]);
+
+                Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
+                //Debug.Log("spawnLocations[i]  : " + spawnLocations[i]);
+                //Debug.Log("rangePos : " + rangePos);
 
 
-                //if (SpawnedBD == 5) break;
+                // 블럭안에 빌딩 포함여부 체크 기능은 사용하지 않음 - 계산시간이 많이 걸려 성능 저하 원인
+      
+                GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
 
-                //// 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                //Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
-                //Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
+                //Debug.Log("BD is spawned in Block - SpawnInstance : " + SpawnInstance);
 
+                // Move new object to the calculated spawn location
+                SpawnInstance.transform.position = rangePos;
 
+                // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
+                ConsBuildings.Add(SpawnInstance);
 
-                //if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성  ---------------???? 수정해야 
-                //{
-
-                //    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
-
-                //    // 계산 과부하 줄이기 위해 딜레
-                //    Thread.Sleep(1000);
-
-                //    // Debug.Log("BD is spawned in Block");
-
-                //    // Move new object to the calculated spawn location
-                //    SpawnInstance.transform.position = rangePos;
-
-                //    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
-                //    ConsBuildings.Add(SpawnInstance);
-
-                //    // add Buindling
-                //    SpawnedBD += 1;
-
-                //}
+                //Debug.Log("생성한 빌딩 수 : " + ConsBuildings.Count);  // --> 빌딩을 수정하면 업데이트 되어야 함
+                ContBDConuter.text = "Buildings : " + ConsBuildings.Count.ToString();
 
 
-                //else
-                //{
-                //    //Debug.Log("BD is not spawned in Block");
+                getBD_area = SpawnInstance.GetComponent<BuildingSize>();
 
-                //    if (SpawnedBD == 5) break;
+                // 추가된 빌딩 면적 계산  --> 계산된 Block의 면적보다 작아야 한다.
+                //Debug.Log("추가된 개별 빌딩의 면적 - BD_area : " + getBD_area.BD_area); // -------->>>>> 생성한 건물 면적이 산출되지 않음
 
-                //}
+                AddedBDArea += getBD_area.BD_area;
 
-                } else // 새로 생성한 빌딩을 처리할 때
-                {
-
-                    if (SpawnedBD == 5) break; // block별로 5개의 빌딩이 만들어지면 더이상 생성하지 않는다. 향후 수정하여 빌딩의 갯수를 제어할 수 있어야 함
-
-                    // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
-                    int selection_ = Random.Range(0, newBuildings.Length);
-
-                    GameObject SelectedPrefab_ = newBuildings[selection_];
-
-                    Instantiate(SelectedPrefab_);
-
-                    // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                    Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
-                    Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
-
-                    GameObject SpawnInstance = Instantiate(SelectedPrefab_, rangePos, Quaternion.identity);
-
-                    // Debug.Log("BD is spawned in Block");
-
-                    // Move new object to the calculated spawn location
-                    SpawnInstance.transform.position = rangePos;
-
-                    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
-                    ConsBuildings.Add(SpawnInstance);
-
-                    // add Buindling
-                    SpawnedBD += 1;
-
-                }
-
-
-
-
-
-
-
-                // -----------------------------------------------------------------------------------------
-
-                // * 아래 로직은 계산 시간이 너무 많이 걸림 * //  --> meshRenderer에 스폰하는 방법을 고려해보기로 
-
-
-                //if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성
-                //{
-
-                //    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
-
-                //    //Debug.Log("BD is spawned in Block");
-
-                //    // Move new object to the calculated spawn location
-                //    SpawnInstance.transform.position = rangePos;
-
-                //    SpawnedBD += 1;
-
-                //}
-                //else
-                //{
-                //    //Debug.Log("BD is not spawned in Block");
-
-                //    if (SpawnedBD == 5) break;
-
-                //}
-                // -----------------------------------------------------------------------------------------
+                // add Buindling
+                SpawnedBD += 1;
 
             }
+
+            // 다음 블럭을 계산하기 위해 값 초기화
+            AddedBDArea = 0;
+            SpawnedBD = 0;
+
+
+
+            //while (SpawnedBD < maxBuilding)
+            //{
+            //    //if (allAreaValueList[i] > AddedBDArea) break;  // 빌딩은 블럭의 면적을 넘을 수없다.
+
+            //    // 빌딩 랜덤으로 추출 --> 향후 빌딛의 종류와 수를 지정할 수 있어야 함
+            //    int selection_ = Random.Range(0, newBuildings.Length);
+
+            //    GameObject SelectedPrefab_ = newBuildings[selection_];
+
+            //    Instantiate(SelectedPrefab_);
+
+            //    // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
+            //    Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
+            //    Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
+
+            //    GameObject SpawnInstance = Instantiate(SelectedPrefab_, rangePos, Quaternion.identity);
+
+            //    // Debug.Log("BD is spawned in Block");
+
+            //    // Move new object to the calculated spawn location
+            //    SpawnInstance.transform.position = rangePos;
+
+            //    // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
+            //    ConsBuildings.Add(SpawnInstance);
+
+            //    // add Buindling
+            //    SpawnedBD += 1;
+            //}
+
+            // -----------------------------------------------------------------------------------------
+
+            // * 아래 로직은 계산 시간이 너무 많이 걸림 * //  --> meshRenderer에 스폰하는 방법을 고려해보기로 
+
+
+            //if (IsPointInPolygon(rangePos, interSecpos_) == true) // 생성값이 4 지점의 중심에 있다면, 즉 폴리곤 안에 있다면 빌딩 생성
+            //{
+
+            //    GameObject SpawnInstance = Instantiate(SelectedPrefab, rangePos, Quaternion.identity);
+
+            //    //Debug.Log("BD is spawned in Block");
+
+            //    // Move new object to the calculated spawn location
+            //    SpawnInstance.transform.position = rangePos;
+
+            //    SpawnedBD += 1;
+
+            //}
+            //else
+            //{
+            //    //Debug.Log("BD is not spawned in Block");
+
+            //    if (SpawnedBD == 5) break;
+
+            //}
+            // -----------------------------------------------------------------------------------------
 
 
             k += 4;
