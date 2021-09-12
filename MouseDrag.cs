@@ -3,31 +3,41 @@ using System.Collections;
 
 public class MouseDrag : MonoBehaviour
 {
-	private Vector3 screenPoint;
-	private Vector3 offset;
 
-	void OnMouseDown()
-	{
-		// Get the click location.
-		screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+	[SerializeField] private LayerMask layerMask;
 
-		// Get the offset of the point inside the object.
-		offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
-																							Input.mousePosition.y,
-																							screenPoint.z));
-	}
+	private Vector3 EndMousePos;
+    private Vector3 StartMousePos;
 
-	void OnMouseDrag()
-	{
-		// Get the click location.
-		Vector3 newScreenPoint = new Vector3(Input.mousePosition.x,
-											 Input.mousePosition.y,
-											 screenPoint.z);
+    // RayCast 기능으로 변경해야 함. x, y, z축이 아니라 오직 x, z 축으로만 이
 
-		// Adjust the location by adding an offset.
-		Vector3 newPosition = Camera.main.ScreenToWorldPoint(newScreenPoint) + offset;
+    void OnMouseDown()
+    {
 
-		// Assign new position.
-		transform.position = newPosition;
-	}
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        Physics.Raycast(ray, out RaycastHit raycastHit, Mathf.Infinity, layerMask);
+        //Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask);
+        StartMousePos = raycastHit.point;
+    }
+
+    void OnMouseDrag()
+    {
+        // Get the click location.
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        Physics.Raycast(ray, out RaycastHit raycastHit, Mathf.Infinity, layerMask);
+        //Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask);
+
+        EndMousePos = raycastHit.point;
+
+        Debug.Log("EndMousePos :" + EndMousePos);
+
+        // Adjust the location by adding an offset.
+        Vector3 newPosition = new Vector3(EndMousePos.x, 0f, EndMousePos.z);
+         
+        // Assign new position.
+        transform.position = newPosition;
+    }
 }

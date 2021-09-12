@@ -389,16 +389,6 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
-    /// <summary>
-    /// check in or out
-    /// </summary>
-    /// <param name="p"></param>
-    /// <param name="polygon"></param>
-    /// <returns></returns>
-    ///
-
-
-
 
     public bool IsPointInPolygon(Vector3 p, Vector3[] polygon)
     {
