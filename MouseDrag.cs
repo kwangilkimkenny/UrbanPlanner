@@ -32,7 +32,7 @@ public class MouseDrag : MonoBehaviour
 
         EndMousePos = raycastHit.point;
 
-        Debug.Log("EndMousePos :" + EndMousePos);
+        //Debug.Log("EndMousePos :" + EndMousePos);
 
         // Adjust the location by adding an offset.
         Vector3 newPosition = new Vector3(EndMousePos.x, 0f, EndMousePos.z);

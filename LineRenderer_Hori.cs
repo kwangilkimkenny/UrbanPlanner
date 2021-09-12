@@ -1,5 +1,7 @@
 // 두점을 연결하하고 도로재질로 연결
 
+// LineRenderer 수정하기 참고 영상  : https://www.youtube.com/watch?v=y5A-2PTKnn0
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

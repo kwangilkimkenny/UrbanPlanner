@@ -13,11 +13,11 @@ public class DistanceChecker : MonoBehaviour
     private Vector3 mousePos;
     private Vector3 StartMousePos;
 
+
     [SerializeField]
     private Text distanceText;
 
     private float distance;
-
 
 
     // Start is called before the first frame update
@@ -57,4 +57,6 @@ public class DistanceChecker : MonoBehaviour
         }
 
     }
+
+
 }
