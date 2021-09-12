@@ -9,7 +9,7 @@ public class MouseDrag : MonoBehaviour
 	private Vector3 EndMousePos;
     private Vector3 StartMousePos;
 
-    // RayCast 기능으로 변경해야 함. x, y, z축이 아니라 오직 x, z 축으로만 이
+
 
     void OnMouseDown()
     {
