@@ -40,11 +40,25 @@ public class GridGenLogic : MonoBehaviour
         getPosOfPrefabs();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
+    public void resetGioPosition()
+    {
+        foreach (GameObject gitm in GameObject.FindGameObjectsWithTag("GioPos"))
+        {
+            Destroy(gitm);
+        }
+
+        props.Clear();
+        prebPosAll.Clear();
+
+        if (gridPrefab)
+            GenerateGrid();
+        else print("missing gridprefab, please assign.");
+
+        // 생성된 프리팹의 모든 위치값을 추출 하여 저장한다. --> 이 값을 이제 lineRenderer로 보내서 도로를 그려주면된다.
+        getPosOfPrefabs();
     }
+
 
     void GenerateGrid()
     {

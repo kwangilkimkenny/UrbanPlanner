@@ -9,11 +9,17 @@ using UnityEngine.UI;
 
 public class UI_Get_Info_Block : MonoBehaviour
 {
-
+    // Block ID
     public SpawnBuilding Spawn;
+
+    // Building Area
+    public SpawnBuilding SpawnPos_FindIntersection;
 
     private int findIndex_int;
     public Text findIndexValue;
+
+    private float getEachBlockArea;
+    public Text blockArea;
 
 
     // Start is called before the first frame update
@@ -47,11 +53,18 @@ public class UI_Get_Info_Block : MonoBehaviour
                     {
                         Debug.Log("indi :" + indi);
 
-                        // 클릭하여 레이케스트로 출돌시켜 선택한 게임오브젝트의 위치값과 생성한 인디케이터 배열의 개별 값을 각각 비교하여 같은것이 있다면, 해당 위치 값을 가져오면 됨
+                        // 클릭하여 레이케스트로 findIndex_int돌시켜 선택한 게임오브젝트의 위치값과 생성한 인디케이터 배열의 개별 값을 각각 비교하여 같은것이 있다면, 해당 위치 값을 가져오면 됨
                         if (hit.transform.gameObject.transform.position == indi.transform.position)
                         {
                             findIndex_int = Spawn.BlockIndicator_List.FindIndex(x => x == indi);
                             findIndexValue.text= "Block ID :" + findIndex_int.ToString();
+
+                            foreach (float area in SpawnPos_FindIntersection.allAreaValueList)
+                            {
+                                getEachBlockArea = SpawnPos_FindIntersection.allAreaValueList[findIndex_int];
+                                blockArea.text = "Block Area :" + getEachBlockArea.ToString();
+                            }
+
                         }
 
                     }
