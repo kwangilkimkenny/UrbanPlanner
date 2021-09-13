@@ -70,7 +70,9 @@ public class SpawnBuilding : MonoBehaviour
 
     private bool state = true;
 
-
+    // 블럭이 현재 81개임 -- 나중에 가변값을 변경 가능
+    //public GameObject[] BlockIndicator_Array = new GameObject[81]; // 사용하지 않ㅇ
+    public List<GameObject> BlockIndicator_List = new List<GameObject>();
 
     // 빌딩 면적 접근하기 - 빌딩에 적용한 BuildingSize 클래스 접근
     BuildingSize getBD_area;
@@ -143,7 +145,6 @@ public class SpawnBuilding : MonoBehaviour
 
         Debug.Log("Contructing Buildings.....");
 
-
         int k = 0;
         int SpawnedBD = 0;
         float AddedBDArea = 0;
@@ -168,6 +169,18 @@ public class SpawnBuilding : MonoBehaviour
             interSecpos_[3] = new Vector3(interSecPos[k + 3].x, interSecPos[k + 3].y, interSecPos[k + 3].z);
             //Debug.Log("interSecpos_[3]: " + interSecpos_[3]);
 
+            // 블럭위치를 알려주는 인디케이터
+            GameObject BlockIndicator = Instantiate(BlockIndicatorPrefab, spawnLocations[i], Quaternion.identity);
+
+            BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, spawnLocations[i].y + 0.7f, spawnLocations[i].z);
+
+            //GameObject[] BlockIndicator_Array = new GameObject[interSecPos.Count / 4 - 1];
+            // 리스트에 추가 - 이 값은 UI에서 추적 관리할것임 -> 연결코드는 UI_Get_info_Block 임!
+
+            //Debug.Log("BlockIndicator :" + BlockIndicator); // 저장이 잘됨
+
+            BlockIndicator_List.Add(BlockIndicator);
+
 
 
             while (0 < allAreaValueList[i] - AddedBDArea) // 블럭 면적에서 추가된 빌딩들 면적을 빼다가 - 값이 나오기 전에 while 빠져나옴
@@ -190,10 +203,6 @@ public class SpawnBuilding : MonoBehaviour
                 //Debug.Log("spawnLocations[i]  : " + spawnLocations[i]);
                 //Debug.Log("rangePos : " + rangePos);
 
-                // 블럭위치를 알려주는 인디케이터
-                GameObject BlockIndicator = Instantiate(BlockIndicatorPrefab, spawnLocations[i], Quaternion.identity);
-
-                BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, spawnLocations[i].y + 0.7f, spawnLocations[i].z);
 
                 // 블럭안에 빌딩 포함여부 체크 기능은 사용하지 않음 - 계산시간이 많이 걸려 성능 저하 원인
 
@@ -203,6 +212,7 @@ public class SpawnBuilding : MonoBehaviour
 
                 // Move new object to the calculated spawn location
                 SpawnInstance.transform.position = rangePos;
+
 
                 // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
                 ConsBuildings.Add(SpawnInstance);
@@ -220,6 +230,7 @@ public class SpawnBuilding : MonoBehaviour
 
                 // add Buindling
                 SpawnedBD += 1;
+
 
             }
 
@@ -311,7 +322,7 @@ public class SpawnBuilding : MonoBehaviour
 
         }
 
-        Debug.Log("interSecPos.Count" + interSecPos.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
+        // Debug.Log("interSecPos.Count" + interSecPos.Count); // 324개로 4로 나누면 81개, 9X9의 블럭으로 구성되었기 때문
                                         // 4개의 지점으로 블럭조합 리스트가 완성되면 (,,,)의 리스트로 그룹데이터 생성됨, 이것을 가지고 중간지점  == > interSecPos
 
         // 지도상의 블럭 즉, 4지점을 추출하기 위한 gameobject르 순서대로 묶은 리스트 값 선언 
@@ -360,7 +371,7 @@ public class SpawnBuilding : MonoBehaviour
             // 리스트로 저장 spawnBD_Raius_All
             spawnBD_Raius_All.Add(spawnBD_Raius); 
 
-    k += 4;
+            k += 4;
         }
 
     }

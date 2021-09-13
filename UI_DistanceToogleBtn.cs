@@ -26,14 +26,15 @@ public class UI_DistanceToogleBtn : MonoBehaviour
 
         if (isOn) // 켜지면, 
         {
-            Debug.Log("Distance togllel is on");
+            //Debug.Log("Distance togllel is on");
 
             GameObject.Find("DistanceCheck").transform.Find("DistanceChecker").gameObject.SetActive(true);
             
         }else // 꺼지거나 꺼져있다면,
         {
             Distance = GameObject.Find("DistanceChecker");
-            Debug.Log("Distance togllel is off");
+            //Debug.Log("Distance togllel is off");
+
             Distance.SetActive(false);
 
             // 꺼지면 기본 거리측정 메시지로 변환
