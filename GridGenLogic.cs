@@ -13,24 +13,11 @@ public class GridGenLogic : MonoBehaviour
     // 생성된 gioPoint를 props 리스트에 등록해주기 위한 리스트
     public List<GameObject> props = new List<GameObject>();
     public List<Vector3> prebPosAll = new List<Vector3>();
-    // added code
-    //public GameObject[,] gridArray;
-    //public int startX = 0;
-    //public int startY = 0;
-    //public int endX = 2;
-    //public int endY = 2;
-    //public List<GameObject> path = new List<GameObject>();
 
-    //public int x = 0;
-    //public int y = 0;
 
     // Start is called before the first frame update
     void Awake()
     {
-
-        // added code
-        // gridArray = new GameObject[columns, rows];
-
 
         if (gridPrefab)
             GenerateGrid();
@@ -45,7 +32,7 @@ public class GridGenLogic : MonoBehaviour
     {
         foreach (GameObject gitm in GameObject.FindGameObjectsWithTag("GioPos"))
         {
-            Destroy(gitm);
+            gitm.SetActive(false);
         }
 
         props.Clear();

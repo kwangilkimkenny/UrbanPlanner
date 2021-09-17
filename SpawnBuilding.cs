@@ -77,6 +77,9 @@ public class SpawnBuilding : MonoBehaviour
     // 빌딩 면적 접근하기 - 빌딩에 적용한 BuildingSize 클래스 접근
     BuildingSize getBD_area;
 
+    // Block당 건물 수 기록한 리스트
+    public List<int> BuildingsInBlocks = new List<int>();
+
 
 
     public void StartSpawn()
@@ -96,10 +99,9 @@ public class SpawnBuilding : MonoBehaviour
         else // true 라면, 즉, 스폰되었다면 
         {
 
-            ResetAllBuilding();
-
             // 아예 새로 만들어 버린다.
             SpawnPos_FindIntersection();
+
             Spawn();
 
             state = true;
@@ -131,6 +133,7 @@ public class SpawnBuilding : MonoBehaviour
         buildingPrebs.Clear();
         blocks.Clear();
         spawnLocations.Clear();
+        BlockIndicator_List.Clear();
 
 
         ContBDConuter.text = "Buildings : " + ConsBuildings.Count.ToString();
@@ -143,7 +146,7 @@ public class SpawnBuilding : MonoBehaviour
     private void Spawn()
     {
 
-        Debug.Log("Contructing Buildings.....");
+        Debug.Log("Contructing Buildings...");
 
         int k = 0;
         int SpawnedBD = 0;
@@ -174,10 +177,10 @@ public class SpawnBuilding : MonoBehaviour
 
             BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, spawnLocations[i].y + 0.7f, spawnLocations[i].z);
 
-            //GameObject[] BlockIndicator_Array = new GameObject[interSecPos.Count / 4 - 1];
+            // GameObject[] BlockIndicator_Array = new GameObject[interSecPos.Count / 4 - 1];
             // 리스트에 추가 - 이 값은 UI에서 추적 관리할것임 -> 연결코드는 UI_Get_info_Block 임!
 
-            //Debug.Log("BlockIndicator :" + BlockIndicator); // 저장이 잘됨
+            // Debug.Log("BlockIndicator :" + BlockIndicator); // 저장이 잘됨
 
             BlockIndicator_List.Add(BlockIndicator);
 
@@ -228,11 +231,16 @@ public class SpawnBuilding : MonoBehaviour
 
                 AddedBDArea += getBD_area.BD_area;
 
+
                 // add Buindling
                 SpawnedBD += 1;
 
 
             }
+
+            // 블럭당 생성된 빌딩 수 리스트에 기록
+            BuildingsInBlocks.Add(SpawnedBD);
+
 
             // 다음 블럭을 계산하기 위해 값 초기화
             AddedBDArea = 0;
