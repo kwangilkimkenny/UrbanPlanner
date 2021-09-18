@@ -63,7 +63,7 @@ public class test_Vector_Cal : MonoBehaviour
         // 10% 적용 후 -> 새로운 이동위치 2 :(-0.9, 0.0, 1.9)
 
 
-        // 변화거리를 무시한 값 적용
+        // 변화거리를 무시한 값 적용 -------- " 채택 ! "
         Vector3 S8 = (p1_ + S1) * 0.1f;
         Vector3 S9 = (p2_ + S1) * 0.1f;
         Vector3 S10 = (p3_ + S1) * 0.1f;

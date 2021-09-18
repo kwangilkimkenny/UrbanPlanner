@@ -29,6 +29,9 @@ public class GridGenLogic_Block : MonoBehaviour
 
     public List<Vector3> startPosEachBlock = new List<Vector3>();
 
+    // 1차 블럭의 4 지점의 위치를 저장한 리스트
+    public List<Vector3> PosEachBlock = new List<Vector3>();
+
 
 
     // 불러올 게임오브젝트 리스트 선언
@@ -43,6 +46,7 @@ public class GridGenLogic_Block : MonoBehaviour
 
         if (gridPrefab)
         {
+            int k = 0;
             foreach (Vector3 StPos in startPosEachBlock)
             {
                 // 작은 블럭단위의 시작 위치값 추출하여 반복 생성
@@ -50,8 +54,45 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 leftBottomLocation = new Vector3(StPos.x, StPos.y, StPos.z);
 
-                GenerateGrid();
+                Vector3 P1 = PosEachBlock[k];
+                Vector3 P2 = PosEachBlock[k + 1];
+                Vector3 P3 = PosEachBlock[k + 2];
+                Vector3 P4 = PosEachBlock[k + 3];
 
+
+                //GenerateGrid();
+
+                for (int i = 0; i < columns; i++)
+                {
+                    for (int j = 0; j < rows; j++)
+                    {
+                        GameObject obj = Instantiate(gridPrefab, new Vector3(leftBottomLocation.x + scale * i, leftBottomLocation.y, leftBottomLocation.z + scale * j), Quaternion.identity);
+
+                        //print("Instantiate1");
+                        obj.transform.SetParent(gameObject.transform);
+
+                        //print("Instantiate2");
+                        obj.GetComponent<GridStat>().x = i;
+
+                        //print("Instantiate3");
+                        obj.GetComponent<GridStat>().y = j;
+
+                        //////// obj 의 위치를 변경해야 함
+                        ///                    // 10% 만 적용하여 위치값 재조정
+                        Vector3 S1 = (P1 + obj.transform.position) * 0.1f;
+                        Vector3 S2 = (P2 + obj.transform.position) * 0.1f;
+                        Vector3 S3 = (P3 + obj.transform.position) * 0.1f;
+                        Vector3 S4 = (P4 + obj.transform.position) * 0.1f;
+
+                        obj.transform.position = S1 + S2 + S3 + S4;
+                        Debug.Log("sub_Gio_pos 위치 :" + obj);
+
+                        props_.Add(obj);
+
+                    }
+
+                }
+             k += 4;
             }
         }
         else print("missing gridprefab, please assign.");
@@ -75,6 +116,7 @@ public class GridGenLogic_Block : MonoBehaviour
         prebPosAll_.Clear();
         startPosEachBlock.Clear();
         GiposSpawnPrefabs.Clear();
+        PosEachBlock.Clear();
 
         //if (gridPrefab)
         //    GenerateGrid();
@@ -102,13 +144,19 @@ public class GridGenLogic_Block : MonoBehaviour
                 //print("Instantiate3");
                 obj.GetComponent<GridStat>().y = j;
 
-                // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
+
+                //////// obj 의 위치를 변경해야 함
+
                 props_.Add(obj);
 
 
             }
         }
     }
+
+
+
+
 
     // 생성된 오브젝트의 위치를 추출해주는 함수를 만든다.
     public void getPosOfPrefabs()
@@ -153,10 +201,11 @@ public class GridGenLogic_Block : MonoBehaviour
             //Debug.Log("interSecPos[k]");
             //브럭의 시작점 위치 추출
             startPosEachBlock.Add(interSecPos_[k]);
-            //블럭의 2~4번째 위치 추출
-            startPosEachBlock.Add(interSecPos_[k+1]);
-            startPosEachBlock.Add(interSecPos_[k+2]);
-            startPosEachBlock.Add(interSecPos_[k+3]);
+            //블럭의 1~4번째 위치 추
+            PosEachBlock.Add(interSecPos_[k]);
+            PosEachBlock.Add(interSecPos_[k+1]);
+            PosEachBlock.Add(interSecPos_[k+2]);
+            PosEachBlock.Add(interSecPos_[k+3]);
 
             k += 4;
         }

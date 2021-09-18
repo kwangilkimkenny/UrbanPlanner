@@ -27,23 +27,29 @@ public class GridGenLogic : MonoBehaviour
         getPosOfPrefabs();
     }
 
-
-    public void resetGioPosition()
+    // GioPos 생성 - 버튼에 적용하는 실행함수
+    public void getGioPos()
     {
-        foreach (GameObject gitm in GameObject.FindGameObjectsWithTag("GioPos"))
-        {
-            gitm.SetActive(false);
-        }
-
-        props.Clear();
-        prebPosAll.Clear();
-
         if (gridPrefab)
             GenerateGrid();
         else print("missing gridprefab, please assign.");
 
         // 생성된 프리팹의 모든 위치값을 추출 하여 저장한다. --> 이 값을 이제 lineRenderer로 보내서 도로를 그려주면된다.
         getPosOfPrefabs();
+    }
+
+    // GioPos 파되 - 버튼에 적용하는 실행함수
+    public void resetGioPosition()
+    {
+        foreach (GameObject gitm in GameObject.FindGameObjectsWithTag("GioPos"))
+        {
+            //gitm.SetActive(false);
+            Destroy(gitm);
+        }
+
+        props.Clear();
+        prebPosAll.Clear();
+
     }
 
 
