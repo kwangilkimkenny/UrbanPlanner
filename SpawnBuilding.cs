@@ -80,6 +80,9 @@ public class SpawnBuilding : MonoBehaviour
     // Block당 건물 수 기록한 리스트
     public List<int> BuildingsInBlocks = new List<int>();
 
+    // Start position of each blocks
+    public List<Vector3> startPosEachBlock = new List<Vector3>();
+
 
 
     public void StartSpawn()
@@ -342,6 +345,10 @@ public class SpawnBuilding : MonoBehaviour
             //Debug.Log("interSecPos[k]" + interSecPos[k+2]);
             //Debug.Log("interSecPos[k]" + interSecPos[k+3]);
             Vector3 spawnLocation = FindIntersection(interSecPos[k], interSecPos[k + 1], interSecPos[k + 2], interSecPos[k + 3]);
+
+            //Debug.Log("interSecPos[k]");
+            //브럭의 시작점 위치 추출
+            startPosEachBlock.Add(interSecPos[k]);
 
             //Debug.Log("spawnLocation" + spawnLocation);
             // 생성위치추출로 81개의 블럭 중심위치를 리스트로 저장

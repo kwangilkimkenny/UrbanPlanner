@@ -3,7 +3,9 @@ guid: 969d27a5ceb1541f8b23590c25f93a7e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Brush: {fileID: 960075004886084958, guid: b2b5a1713abb1439296592e3e349b397, type: 3}
+  - RTexture: {fileID: 8400000, guid: 7530795b00ffd476ba47ee9666954e5c, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
