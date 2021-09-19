@@ -65,9 +65,6 @@ public class GridGenLogic_Block : MonoBehaviour
         Debug.Log("generate sub_gio_position!");
 
 
-        get_PreGetOriginGioPos = this.gameObject.GetComponent<GridGenLogic>();
-        get_PreGetOriginGioPos.pre_get_origins_giopos.GetComponent<GridGenLogic_Block>().PreGetOriginGioPos();
-
         // get post value
         //PreGetOriginGioPos();
 
@@ -86,6 +83,7 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 // 업데이트 이전 지점의 위치
                 Vector3 postP1 = Post_PosEachBlock[k];
+                Debug.Log("postP1 :" + postP1);
                 Vector3 postP2 = Post_PosEachBlock[k + 1];
                 Vector3 postP3 = Post_PosEachBlock[k + 2];
                 Vector3 postP4 = Post_PosEachBlock[k + 3];
@@ -93,6 +91,7 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 // 업데이트한 네 지점의 위치값
                 Vector3 updatedP1 = PosEachBlock[k];
+                Debug.Log("updatedP1 :" + updatedP1);
                 Vector3 updatedP2 = PosEachBlock[k + 1];
                 Vector3 updatedP3 = PosEachBlock[k + 2];
                 Vector3 updatedP4 = PosEachBlock[k + 3];
@@ -105,7 +104,7 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 // 네 지점의 위치변화 크기(길이)
                 float DistP1 = Vector3.Distance(postP1, updatedP1);
-                Debug.Log("DistP1 :" + DistP1);
+                //Debug.Log("DistP1 :" + DistP1);
                 float DistP2 = Vector3.Distance(postP2, updatedP2);
                 float DistP3 = Vector3.Distance(postP3, updatedP3);
                 float DistP4 = Vector3.Distance(postP4, updatedP4);
