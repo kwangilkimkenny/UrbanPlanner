@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GridGenLogic : MonoBehaviour
 {
+    public GridGenLogic_Block pre_get_origins_giopos;
+
     public int rows = 10;
     public int columns = 10;
     public int scale = 1;
@@ -18,6 +20,11 @@ public class GridGenLogic : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        // 사전 GioPos위치값 추출을 위한 함수 실행
+        pre_get_origins_giopos = this.gameObject.GetComponent<GridGenLogic_Block>();
+        pre_get_origins_giopos.GetComponent<GridGenLogic_Block>().PreGetOriginGioPos();
+        Debug.Log("GioPos의 사전 위치값 생성 체크!");
+
 
         if (gridPrefab)
             GenerateGrid();
@@ -30,15 +37,24 @@ public class GridGenLogic : MonoBehaviour
     // GioPos 생성 - 버튼에 적용하는 실행함수
     public void getGioPos()
     {
+        // 리스트 변수 삭제, 다음 코드에서 새로 생성할거임
+        this.gameObject.GetComponent<GridGenLogic_Block>().Post_PosEachBlock.Clear();
+
         if (gridPrefab)
+        {
+            // 사전 GioPos위치값 추출을 위한 함수 실행
+            pre_get_origins_giopos = this.gameObject.GetComponent<GridGenLogic_Block>();
+            pre_get_origins_giopos.GetComponent<GridGenLogic_Block>().PreGetOriginGioPos();
+
             GenerateGrid();
+        }
         else print("missing gridprefab, please assign.");
 
         // 생성된 프리팹의 모든 위치값을 추출 하여 저장한다. --> 이 값을 이제 lineRenderer로 보내서 도로를 그려주면된다.
         getPosOfPrefabs();
     }
 
-    // GioPos 파되 - 버튼에 적용하는 실행함수
+    // GioPos 파되 - 버튼에 적용하는 실행함
     public void resetGioPosition()
     {
         foreach (GameObject gitm in GameObject.FindGameObjectsWithTag("GioPos"))

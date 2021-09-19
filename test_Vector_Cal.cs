@@ -37,40 +37,59 @@ public class test_Vector_Cal : MonoBehaviour
         Vector3 p4 = new Vector3(1f, 0f, 1f);
         Vector3 p4_ = new Vector3(1.5f, 0f, 10f);
 
-        // 네 지점의 변화 거리(간격) 
+        // 네 지점의 변화로 방향벡터
         Vector3 newP = p1_ - p1;
+        Debug.Log("newP :" + newP);
         Vector3 newP2 = p2_ - p2;
         Vector3 newP3 = p3_ - p3;
         Vector3 newP4 = p4_ - p4;
 
+        // 변화의 크기(길이)계산하기
+        float DistP1 = Vector3.Distance(p1_, p1);
+        Debug.Log("DistP1 :" + DistP1);
+        float DistP2 = Vector3.Distance(p2_, p2);
+        float DistP3 = Vector3.Distance(p3_, p3);
+        float DistP4 = Vector3.Distance(p4_, p4);
 
         // 기존의 위치
         Vector3 S1 = new Vector3(0f, 0f, 0f);
         Debug.Log("기존의 위치: " + S1);
 
+
+        // 도착위치 = 현재위치 + 방향벡터 * 이동할거리
+        Vector3 F_S1 = (S1 + newP * DistP1) * 0.01f;
+        Vector3 F_S2 = (S1 + newP2 * DistP2) * 0.01f;
+        Vector3 F_S3 = (S1 + newP3 * DistP3) * 0.01f;
+        Vector3 F_S4 = (S1 + newP4 * DistP4) * 0.01f;
+
+        Vector3 Final_S = F_S1 + F_S2 + F_S3 + F_S4;
+
+        Debug.Log("도착위치 = 현재위치 + 방향벡터 * 이동할거리 :" + Final_S);
+
+
         //// 새로운 이동 위치
         //Vector3 S2 = (newP4 - (newP3 -(newP2 - (newP - S1))));
         //Debug.Log("새로운 이동위치 :" + S2);
 
-        Vector3 S3 = (newP + S1) * 0.1f;
-        Vector3 S4 = (newP2 + S1) * 0.1f;
-        Vector3 S5 = (newP3 + S1) * 0.1f;
-        Vector3 S6 = (newP4 + S1) * 0.1f;
+        //Vector3 S3 = (newP + S1) * 0.1f;
+        //Vector3 S4 = (newP2 + S1) * 0.1f;
+        //Vector3 S5 = (newP3 + S1) * 0.1f;
+        //Vector3 S6 = (newP4 + S1) * 0.1f;
 
-        Vector3 S7 = S3 + S4 + S5 + S6;
-        Debug.Log("새로운 이동위치 2 :" + S7);
+        //Vector3 S7 = S3 + S4 + S5 + S6;
+        //Debug.Log("새로운 이동위치 2 :" + S7);
         // 10% 적용전 --> 새로운 이동위치 2 :(-9.2, 0.0, 18.5)
         // 10% 적용 후 -> 새로운 이동위치 2 :(-0.9, 0.0, 1.9)
 
 
         // 변화거리를 무시한 값 적용 -------- " 채택 ! "
-        Vector3 S8 = (p1_ + S1) * 0.1f;
-        Vector3 S9 = (p2_ + S1) * 0.1f;
-        Vector3 S10 = (p3_ + S1) * 0.1f;
-        Vector3 S11 = (p4_ + S1) * 0.1f;
+        //Vector3 S8 = (p1_ + S1) * 0.1f;
+        //Vector3 S9 = (p2_ + S1) * 0.1f;
+        //Vector3 S10 = (p3_ + S1) * 0.1f;
+        //Vector3 S11 = (p4_ + S1) * 0.1f;
 
-        Vector3 S12 = S8 + S9 + S10 + S11;
-        Debug.Log("새로운 이동위치 3 :" + S12);
+        //Vector3 S12 = S8 + S9 + S10 + S11;
+        //Debug.Log("새로운 이동위치 3 :" + S12);
 
         // 새로운 위치
         // 네 지점 벡터의 합 - 기존의 위치

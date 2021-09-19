@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class GridGenLogic_Block : MonoBehaviour
 {
+    // GridGenLogic 함수에서 실행한 값을 가져온다.
+    public GridGenLogic get_PreGetOriginGioPos;
 
     public int rows = 10;
     public int columns = 10;
@@ -27,21 +29,49 @@ public class GridGenLogic_Block : MonoBehaviour
     // 총 81개의 블for (int i = 0; i < spawnPrefabs.Count + 1; i++)
     public List<Vector3> interSecPos_ = new List<Vector3>();
 
+    // 1차 계산
+    public List<Vector3> interSecPos__ = new List<Vector3>();
+
     public List<Vector3> startPosEachBlock = new List<Vector3>();
 
-    // 1차 블럭의 4 지점의 위치를 저장한 리스트
+    // 2차 블럭의 4 지점의 위치를 저장한 리스트
     public List<Vector3> PosEachBlock = new List<Vector3>();
 
-
+    //Post_PosEachBlock
+    public List<Vector3> Post_PosEachBlock = new List<Vector3>();
 
     // 불러올 게임오브젝트 리스트 선언
     private List<GameObject> GiposSpawnPrefabs = new List<GameObject>();
+
+    // GiposSpawnPrefabs_
+    private List<GameObject> GiposSpawnPrefabs_ = new List<GameObject>();
+
+
+   //void Awake()
+   // {
+   //     // 코드가 샐행되면 1차 계산, // get post value
+   //     PreGetOriginGioPos();
+
+   //     // 값 확인 테스트
+   //     foreach (Vector3 ps in Post_PosEachBlock)
+   //     {
+   //         Debug.Log("ps: " + ps);
+   //     }
+   // }
 
 
     public void getGioPosInBlock()
     {
         Debug.Log("generate sub_gio_position!");
 
+
+        get_PreGetOriginGioPos = this.gameObject.GetComponent<GridGenLogic>();
+        get_PreGetOriginGioPos.pre_get_origins_giopos.GetComponent<GridGenLogic_Block>().PreGetOriginGioPos();
+
+        // get post value
+        //PreGetOriginGioPos();
+
+        // get updated value - current
         getOriginGioPos();
 
         if (gridPrefab)
@@ -54,10 +84,31 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 leftBottomLocation = new Vector3(StPos.x, StPos.y, StPos.z);
 
-                Vector3 P1 = PosEachBlock[k];
-                Vector3 P2 = PosEachBlock[k + 1];
-                Vector3 P3 = PosEachBlock[k + 2];
-                Vector3 P4 = PosEachBlock[k + 3];
+                // 업데이트 이전 지점의 위치
+                Vector3 postP1 = Post_PosEachBlock[k];
+                Vector3 postP2 = Post_PosEachBlock[k + 1];
+                Vector3 postP3 = Post_PosEachBlock[k + 2];
+                Vector3 postP4 = Post_PosEachBlock[k + 3];
+
+
+                // 업데이트한 네 지점의 위치값
+                Vector3 updatedP1 = PosEachBlock[k];
+                Vector3 updatedP2 = PosEachBlock[k + 1];
+                Vector3 updatedP3 = PosEachBlock[k + 2];
+                Vector3 updatedP4 = PosEachBlock[k + 3];
+
+                // 네 지점의 변화 방향 벡터
+                Vector3 P1 = postP1 - updatedP1;
+                Vector3 P2 = postP2 - updatedP2;
+                Vector3 P3 = postP3 - updatedP3;
+                Vector3 P4 = postP4 - updatedP4;
+
+                // 네 지점의 위치변화 크기(길이)
+                float DistP1 = Vector3.Distance(postP1, updatedP1);
+                Debug.Log("DistP1 :" + DistP1);
+                float DistP2 = Vector3.Distance(postP2, updatedP2);
+                float DistP3 = Vector3.Distance(postP3, updatedP3);
+                float DistP4 = Vector3.Distance(postP4, updatedP4);
 
 
                 //GenerateGrid();
@@ -77,15 +128,15 @@ public class GridGenLogic_Block : MonoBehaviour
                         //print("Instantiate3");
                         obj.GetComponent<GridStat>().y = j;
 
-                        //////// obj 의 위치를 변경해야 함
-                        ///                    // 10% 만 적용하여 위치값 재조정
-                        Vector3 S1 = (P1 + obj.transform.position) * 0.1f;
-                        Vector3 S2 = (P2 + obj.transform.position) * 0.1f;
-                        Vector3 S3 = (P3 + obj.transform.position) * 0.1f;
-                        Vector3 S4 = (P4 + obj.transform.position) * 0.1f;
+                        // obj 의 위치를 변경해야 함
+                        // 10% 만 적용하여 위치값 재조정
+                        Vector3 S1 = (P1 * DistP1 + obj.transform.position) * 0.25f;
+                        Vector3 S2 = (P2 * DistP2 + obj.transform.position) * 0.25f;
+                        Vector3 S3 = (P3 * DistP3 + obj.transform.position) * 0.25f;
+                        Vector3 S4 = (P4 * DistP4 + obj.transform.position) * 0.25f;
 
                         obj.transform.position = S1 + S2 + S3 + S4;
-                        Debug.Log("sub_Gio_pos 위치 :" + obj);
+                        //Debug.Log("sub_Gio_pos 위치 :" + obj);
 
                         props_.Add(obj);
 
@@ -116,7 +167,10 @@ public class GridGenLogic_Block : MonoBehaviour
         prebPosAll_.Clear();
         startPosEachBlock.Clear();
         GiposSpawnPrefabs.Clear();
+        GiposSpawnPrefabs_.Clear();
         PosEachBlock.Clear();
+        Post_PosEachBlock.Clear();
+        interSecPos__.Clear();
 
         //if (gridPrefab)
         //    GenerateGrid();
@@ -211,4 +265,50 @@ public class GridGenLogic_Block : MonoBehaviour
         }
 
     }
+
+
+
+    public void PreGetOriginGioPos()
+    {
+        // GioPos 태그를 가진 GameObject를 모두 찾아서 새로운 리스트에 하나씩 담는다. 이것은 위치값을 추적하기 위함이다.
+        foreach (GameObject spawnp in GameObject.FindGameObjectsWithTag("GioPos"))
+        {
+            GiposSpawnPrefabs_.Add(spawnp);
+            //Debug.Log("check 1 !");
+        }
+
+        // 4 지점의 조합 리스트값이 필요함. ---> Blocks로 계산해야 ㅎ
+        for (int i = 0; i < GiposSpawnPrefabs_.Count - 11; i++)
+        {
+
+            if (i == 9 || i == 19 || i == 29 || i == 39 || i == 49 || i == 59 || i == 69 || i == 79 || i == 89 || i == 99 || i == 109)
+            {
+                continue;
+            }
+
+            interSecPos__.Add(GiposSpawnPrefabs_[i].transform.position);
+            interSecPos__.Add(GiposSpawnPrefabs_[i + 1].transform.position);
+            interSecPos__.Add(GiposSpawnPrefabs_[i + 10].transform.position);
+            interSecPos__.Add(GiposSpawnPrefabs_[i + 11].transform.position);
+
+        }
+
+        int k = 0;
+        for (int i = 0; i <= interSecPos__.Count / 4 - 1; i++)
+        {
+            //Debug.Log("interSecPos[k]");
+            //브럭의 시작점 위치 추출
+            //startPosEachBlock.Add(interSecPos_[k]);
+            //블럭의 1~4번째 위치 추
+            Post_PosEachBlock.Add(interSecPos__[k]);
+            Post_PosEachBlock.Add(interSecPos__[k + 1]);
+            Post_PosEachBlock.Add(interSecPos__[k + 2]);
+            Post_PosEachBlock.Add(interSecPos__[k + 3]);
+
+            k += 4;
+        }
+
+    }
+
+
 }
