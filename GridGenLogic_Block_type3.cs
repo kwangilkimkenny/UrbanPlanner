@@ -25,29 +25,44 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         int k = 0;
         foreach (GameObject psn in PosEachBlock)
         {
-            GameObject P1 = PosEachBlock[k];
-            GameObject P2 = PosEachBlock[k + 1];
-            GameObject P3 = PosEachBlock[k + 2];
-            GameObject P4 = PosEachBlock[k + 3];
-
-            int RangeNums = Random.Range(3, 11);
-
-            for (int i = 0; i < RangeNums; i++)
+            if (k < PosEachBlock.Count)
             {
-                // 블럭의 중간 생성지점 랜덤으로 포인트 생성
-                int div = Random.Range(3, 10);
 
-                //Vector3.Lerp(vec3 from, vec3 to, float time)
-                Vector3 newPos = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
+                GameObject P1 = PosEachBlock[k];
+                GameObject P2 = PosEachBlock[k + 1];
+                GameObject P3 = PosEachBlock[k + 2];
+                GameObject P4 = PosEachBlock[k + 3];
 
-                GameObject subPos = Instantiate(SubPosObj, newPos, Quaternion.identity);
+                int RangeNums = Random.Range(2, 4);
+
+                for (int i = 0; i < RangeNums; i++)
+                {
+                    // 블럭의 중간 생성지점 랜덤으로 포인트 생성
+                    float div = Random.Range(0f, 1f);
+                    Debug.Log("div:" + div);
+
+                    //Vector3.Lerp(vec3 from, vec3 to, float time)
+                    Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
+                    GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
+
+                    Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
+                    GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
+
+                    Vector3 newPos3 = Vector3.Lerp(P1.transform.position, P3.transform.position, div);
+                    GameObject subPos3 = Instantiate(SubPosObj, newPos3, Quaternion.identity);
+
+                    Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
+                    GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
 
 
+                }
             }
+
+            k += 4;
         }
-        k += 4;
+
     }
-    
+
 
 
     public void getOriginGioPos()

@@ -45,8 +45,13 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
+
+
+
     public int maxBuilding = 50;
     public int buildingCount = 0;
+
+    float buildingFootPrint = 1f;
 
     // building이 스폰되어 있는가? 기본값은 안되어있다. 
     public bool isSpawn = false;
@@ -82,6 +87,8 @@ public class SpawnBuilding : MonoBehaviour
 
     // Start position of each blocks
     public List<Vector3> startPosEachBlock = new List<Vector3>();
+
+
 
 
 
@@ -201,13 +208,22 @@ public class SpawnBuilding : MonoBehaviour
                 //Debug.Log("추가된 빌딩들의 면적 :" + AddedBDArea);
 
 
-                // 중심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출
-                Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
+                // 방법 1 : 심점과 4지점의 거리를 비교해서 가장 큰 거리로 원을 만들어 그 안에서 랜덤으로 위치값을 추출, 단 타겟이 시각형이기 때문에 원밖에 빌딩이 생성될 수 있음
+                //Vector2 randPos = Random.insideUnitCircle * spawnBD_Raius_All[i];
                 //Debug.Log("spawnBD_Raius_All[i]    : " + spawnBD_Raius_All[i]);
 
-                Vector3 rangePos = spawnLocations[i] + new Vector3(randPos.x, 0, randPos.y);
-                //Debug.Log("spawnLocations[i]  : " + spawnLocations[i]);
-                //Debug.Log("rangePos : " + rangePos);
+                // 방법 2: 스폰 레이지를 4각형으로 만들어서 스폰하는 방법. 이 방법을 적용할 것!  성공
+                Vector3 spTarget = new Vector3(
+                                             Random.Range(-0.5f, 0.5f),
+                                             0f,
+                                             Random.Range(-0.5f, 0.5f)
+                                              );
+
+
+
+                Vector3 rangePos = spawnLocations[i] + new Vector3(spTarget.x * buildingFootPrint, 0, spTarget.z * buildingFootPrint);
+                    //Debug.Log("spawnLocations[i]  : " + spawnLocations[i]);
+                    //Debug.Log("rangePos : " + rangePos);
 
 
                 // 블럭안에 빌딩 포함여부 체크 기능은 사용하지 않음 - 계산시간이 많이 걸려 성능 저하 원인
@@ -218,6 +234,10 @@ public class SpawnBuilding : MonoBehaviour
 
                 // Move new object to the calculated spawn location
                 SpawnInstance.transform.position = rangePos;
+
+
+
+                // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨
 
 
                 // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.

@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+//using UnityEditor;
 
 
 // GridPos 의 생성 위치를 할당하고
 // 생성 prefabs 간의 길이를 해당 블럭의 크기에 맞게 비율로 조절한다.
+
+// 반드시 참조할 것
 
 public class GridGenLogic_Block : MonoBehaviour
 {
@@ -47,6 +50,8 @@ public class GridGenLogic_Block : MonoBehaviour
     // GiposSpawnPrefabs_
     private List<GameObject> GiposSpawnPrefabs_ = new List<GameObject>();
 
+    public List<GameObject> Point = new List<GameObject>();
+
 
 
    //void Awake()
@@ -85,7 +90,7 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 // 업데이트 이전 지점의 위치
                 Vector3 postP1 = Post_PosEachBlock[k];
-                Debug.Log("postP1 :" + postP1);
+                //Debug.Log("postP1 :" + postP1);
                 Vector3 postP2 = Post_PosEachBlock[k + 1];
                 Vector3 postP3 = Post_PosEachBlock[k + 2];
                 Vector3 postP4 = Post_PosEachBlock[k + 3];
@@ -93,17 +98,17 @@ public class GridGenLogic_Block : MonoBehaviour
 
                 // 업데이트한 네 지점의 위치값
                 Vector3 updatedP1 = PosEachBlock[k];
-                Debug.Log("updatedP1 :" + updatedP1);
+                //Debug.Log("updatedP1 :" + updatedP1);
                 Vector3 updatedP2 = PosEachBlock[k + 1];
                 Vector3 updatedP3 = PosEachBlock[k + 2];
                 Vector3 updatedP4 = PosEachBlock[k + 3];
 
 
                 // 네 지점의 변화 방향 벡터
-                Vector3 P1 = postP1 - updatedP1;
-                Vector3 P2 = postP2 - updatedP2;
-                Vector3 P3 = postP3 - updatedP3;
-                Vector3 P4 = postP4 - updatedP4;
+                Vector3 P1 = (postP1 - updatedP1).normalized;
+                Vector3 P2 = (postP2 - updatedP2).normalized;
+                Vector3 P3 = (postP3 - updatedP3).normalized;
+                Vector3 P4 = (postP4 - updatedP4).normalized;
 
 
                 // 네 지점의 위치변화 크기(길이)
@@ -153,25 +158,44 @@ public class GridGenLogic_Block : MonoBehaviour
                         // 가장 큰 비율값 계산 순서대로
                         float[] RArray = new float[4];
                         RArray[0] = R1;
+                        //Debug.Log("RArray[0] : " + RArray[0]);
                         RArray[1] = R2;
+                        //Debug.Log("RArray[1] : " + RArray[1]);
                         RArray[2] = R3;
+                        //Debug.Log("RArray[2] : " + RArray[2]);
                         RArray[3] = R4;
+                        //Debug.Log("RArray[3] : " + RArray[3]);
 
-                        // 정렬(큰값 순서대로)
-                        Array.Reverse(RArray);
 
-                        float R1_ = RArray[0] * -1.6f;
-                        float R2_ = RArray[1] * -0.8f;
-                        float R3_ = RArray[2] * -0.2f;
-                        float R4_ = RArray[3] * -0.1f;
+                        Array.Reverse(RArray); // 큰값 순서대로 정렬
+                        //var index1 = Array.FindIndex(RArray, x => x == R1);
+                        //Debug.Log("index_R1 : " + index1); // 3번 인덱스로
 
-                        // 값 확인
-                        //foreach(float value in RArray)
-                        //{
-                        //    Debug.Log("Array Value : " + value);
-                        //}
+                        //var index2 = Array.FindIndex(RArray, x => x == R2);
+                        //Debug.Log("index_R2 : " + index2); // 2번 인덱스
 
-                        // 가중치 적용
+                        //var index3 = Array.FindIndex(RArray, x => x == R3);
+                        //Debug.Log("index_R3 : " + index3); // 1번 인덱스 
+
+                        //var index4 = Array.FindIndex(RArray, x => x == R4);
+                        //Debug.Log("index_R4 : " + index4); // 0번 인덱스 
+
+
+                        // 가중치 값을 적용해볼 것!!!!! 최적값 찾기!!!!, 첫번째 리스트값은 가장 큰값이고 몇번째 인덱스 값이었는지 확인해야 함
+                        float R1_ = RArray[0];
+                        //Debug.Log("R1_ : " + R1_); // 3번인덱스로 가장 큰 값 1번째
+
+                        float R2_ = RArray[1];
+                        //Debug.Log("R2_ : " + R2_); // 2번 인덱스로 2번째 큰값
+
+                        float R3_ = RArray[2];
+                        //Debug.Log("R3_ : " + R3_); // 1번 인덱스로 3번째 큰값
+
+                        float R4_ = RArray[3];
+                        //Debug.Log("R4_ : " + R4_); // 0번 인덱스로 0번째 큰값
+
+
+                        // 가중치 적용 순서대로 첫번째부터 큰 값
                         Vector3 S1 = P1 * R1_;
                         Vector3 S2 = P2 * R2_;
                         Vector3 S3 = P3 * R3_;
@@ -181,6 +205,7 @@ public class GridGenLogic_Block : MonoBehaviour
                         obj.transform.position = obj.transform.position + S1 + S2 + S3 + S4;
                         //Debug.Log("sub_Gio_pos 위치 :" + obj);
 
+      
                         props_.Add(obj);
 
                     }
@@ -353,9 +378,27 @@ public class GridGenLogic_Block : MonoBehaviour
 
     }
 
-
 }
 
+
+//[CanEditMultipleObjects]
+//[CustomEditor(typeof(GridGenLogic_Block))]
+
+
+//public class GridGenLogic_Block_Editor : Editor
+//{
+//    private void OnSceneGUI()
+//    {
+//        GridGenLogic_Block Generator = (GridGenLogic_Block)target;
+
+
+//        for (int i = 0; i < Generator.props_.Count; i++)
+//        {
+//            Generator.Point[i].transform.position = Handles.PositionHandle(Generator.Point[i].transform.position, Quaternion.identity);
+//        }
+
+//    }
+//}
 
 
 
