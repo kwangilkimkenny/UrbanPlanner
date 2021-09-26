@@ -25,7 +25,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         int k = 0;
         foreach (GameObject psn in PosEachBlock)
         {
-            if (k < PosEachBlock.Count)
+            if (k < PosEachBlock.Count )
             {
 
                 GameObject P1 = PosEachBlock[k];
@@ -37,27 +37,39 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
                 for (int i = 0; i < RangeNums; i++)
                 {
+
+                    Debug.Log("k:" + k);
                     // 블럭의 중간 생성지점 랜덤으로 포인트 생성
                     float div = Random.Range(0f, 1f);
-                    Debug.Log("div:" + div);
+                    //Debug.Log("div:" + div);
 
                     //Vector3.Lerp(vec3 from, vec3 to, float time)
                     Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
                     GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
 
-                    Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
-                    GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
+                    //Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
+                    //GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
 
                     Vector3 newPos3 = Vector3.Lerp(P1.transform.position, P3.transform.position, div);
                     GameObject subPos3 = Instantiate(SubPosObj, newPos3, Quaternion.identity);
 
-                    Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
-                    GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
+                    //Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
+                    //GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
+                    // ㄱ 자 부분 생성
+
+                    if (k == 32 || k == 68 || k == 104 || k == 140 || k == 176 || k == 212 || k == 248 || k == 284|| k == 320)                           
+                    {
+                        Debug.Log("div:" + div);
+                         
+                        Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
+                        GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
 
 
+                        Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
+                        GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
+                    }
                 }
-            }
-
+            } 
             k += 4;
         }
 
@@ -103,5 +115,33 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         }
 
     }
+
+
+
+    public void ResetSubGioPosition()
+    {
+        Debug.Log("Reset! and regenerate sub_gio_position again!");
+        foreach (GameObject gitm_ in GameObject.FindGameObjectsWithTag("gioPoint_sub"))
+        {
+            //gitm_.SetActive(false);
+            Destroy(gitm_);
+        }
+
+
+        interSecPos_.Clear();
+        startPosEachBlock.Clear();
+        GiposSpawnPrefabs.Clear();
+        PosEachBlock.Clear();
+        interSecObj.Clear();
+        Destroy(SubPosObj);
+
+        //if (gridPrefab)
+        //    GenerateGrid();
+        //else print("missing gridprefab, please assign.");
+
+        //// 생성된 프리팹의 모든 위치값을 추출 하여 저장한다. --> 이 값을 이제 lineRenderer로 보내서 도로를 그려주면된다.
+        //getPosOfPrefabs();
+    }
+
 
 }
