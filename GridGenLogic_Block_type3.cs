@@ -34,9 +34,99 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     // block subgiopos
     // int = k 로 블록당 id값임 총 81개임
     public Dictionary<int, List<GameObject>> dict = new Dictionary<int, List<GameObject>>();
+    public Dictionary<int, List<GameObject>> dict_ = new Dictionary<int, List<GameObject>>();
+
+
 
     // subRoads 를 그리기 위한 positon 추출
-    public void DrawSubRoads()
+    public void DrawSubRoads_GioPos_Vertical()
+    {
+        // get updated value - current
+        Debug.Log("run getOriginGioPos()! ");
+        getOriginGioPos();
+
+        for (int k = 0; k < PosEachBlock.Count; k += 4)
+        {
+            //Debug.Log("PosEachBlock.Count : " + PosEachBlock.Count);
+            GameObject P1 = PosEachBlock[k];
+            GameObject P2 = PosEachBlock[k + 1];
+            GameObject P3 = PosEachBlock[k + 2];
+            GameObject P4 = PosEachBlock[k + 3];
+
+            // 점이 몇개가 생성될 것인지 결정
+            //int RangeNums = Random.Range(2, 10);
+            int RangeNums = 10;
+
+            float div = 1f / RangeNums;
+
+            int key_ = 0;
+            for (int i = 0; i < RangeNums; i++)
+            {
+
+                //Debug.Log("k:" + k);
+                // 블럭의 중간 생성지점 랜덤으로 포인트 생성
+                //float div = Random.Range(0f, 1f);
+
+                //Debug.Log("div:" + div);
+
+                //var dict = new Dictionary<int, List<GameObject>>();
+
+                if (!dict_.ContainsKey(key_))
+                {
+                    //add
+                    dict_.Add(key_, new List<GameObject>());
+                }
+
+                // Vertical 
+                //Vector3.Lerp(vec3 from, vec3 to, float time)
+                Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
+                GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
+
+                dict_[key_].Add(subPos1); // 0 4 8 ...
+
+                Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
+                GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
+
+                dict_[key_].Add(subPos4); // 0 4 8 ...
+
+
+                // 위에서 생성한 subPos를 기반으로 블록 내부의 subGioPos 추가
+
+
+                int num = 1;
+                float div_ = 1f / RangeNums;
+                while (num <= RangeNums)
+                {
+                    Vector3 subNewPos1 = Vector3.Lerp(subPos1.transform.position, subPos4.transform.position, div_);
+                    Debug.Log("subNewPos1");
+                    GameObject subPos1_ = Instantiate(SubPosObj, subNewPos1, Quaternion.identity);
+                    num++;
+                    div_ += (1f / RangeNums);
+
+                }
+
+
+                key_ += 4;
+
+                div += (1f / RangeNums);
+            }
+
+        }
+
+        //Debug.Log("key : value = ", dict_[0][0]); // 0 4 8 12 ...
+
+
+
+
+
+    }
+
+
+
+
+
+    // subRoads 를 그리기 위한 positon 추출
+    public void DrawSubRoads_GioPos_Horizontal()
     {
         // get updated value - current
         Debug.Log("run getOriginGioPos()! ");
@@ -57,7 +147,6 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
             float div = 1f / RangeNums;
 
             int key_ = 0;
-
             for (int i = 0; i < RangeNums; i++)
             {
 
@@ -75,17 +164,20 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                     dict.Add(key_, new List<GameObject>());
                 }
 
-                //Vector3.Lerp(vec3 from, vec3 to, float time)
-                Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
-                GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
+                //// Vertical 
+                ////Vector3.Lerp(vec3 from, vec3 to, float time)
+                //Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
+                //GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
 
-                dict[key_].Add(subPos1);
+                //dict[key_].Add(subPos1);
 
-                Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
-                GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
+                //Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
+                //GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
 
-                dict[key_].Add(subPos4);
+                //dict[key_].Add(subPos4);
 
+                // ---------------------------------------------------------------------------
+                // Horizontal 
                 Vector3 newPos3 = Vector3.Lerp(P1.transform.position, P3.transform.position, div);
                 GameObject subPos3 = Instantiate(SubPosObj, newPos3, Quaternion.identity);
 
@@ -96,30 +188,16 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
                 dict[key_].Add(subPo2);
 
-                
-
-                // ㄱ 자 부분 생성
-
-                //if (k == 32 || k == 68 || k == 104 || k == 140 || k == 176 || k == 212 || k == 248 || k == 284 || k == 320)
-                //{
-                //    //Debug.Log("div:" + div);
-
-                //    Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
-                //    GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
-
-
-                //    Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
-                //    GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
-                //}
-
                 key_ += 4;
 
                 div += (1f / RangeNums); 
             }
-            Debug.Log("dict" + dict);
+
         }
 
     }
+
+
 
     // 생성한 subRoads posion을 이용하여 subRoads Line 생성!
     public void GenerateNewLine()
