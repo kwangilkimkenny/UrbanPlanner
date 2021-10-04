@@ -15,7 +15,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     [SerializeField]
     private GameObject linePointPrefab;
 
-    public GameObject newLineGen;
+    public GameObject newLineGen, newLineGen_;
 
 
 
@@ -36,6 +36,10 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
     public Dictionary<int, List<GameObject>> dict = new Dictionary<int, List<GameObject>>();
     public Dictionary<int, List<GameObject>> dict_ = new Dictionary<int, List<GameObject>>();
+
+
+    public GameObject nextPnt, nextPnt_;
+    public List<GameObject> getNextPnts = new List<GameObject>();
 
 
 
@@ -62,31 +66,31 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
             // 점이 몇개가 생성될 것인지 결정
             //int RangeNums = Random.Range(2, 10);
             int RangeNums = 10;
+            int arrNumOfBlk = 10; // 개별 키로 총 10개의 버티컬 게임오브젝트 생arrNumOfBlk
 
             // 중간지점값 설정
             float div = 1f / RangeNums;
 
             
-            for (int i = 0; i < PosEachBlock.Count / 4; i++)
+            for (int i = 0; i < arrNumOfBlk; i++) //10 개만 생1
             {
 
                 if (!dict_.ContainsKey(key_))
                 {
-                    //add
+                    // 선언
                     dict_.Add(key_, new List<GameObject>());
                 }
 
                 // Vertical 
-                //Vector3.Lerp(vec3 from, vec3 to, float time)
                 Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
                 GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
 
-                dict_[key_].Add(subPos1); // 0 4 8 ...
+                dict_[key_].Add(subPos1); 
 
                 Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
                 GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
 
-                dict_[key_].Add(subPos4); // 0 4 8 ...
+                dict_[key_].Add(subPos4); 
 
 
                 // 위에서 생성한 subPos를 기반으로 블록 내부의 subGioPos 추가
@@ -112,11 +116,11 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
         }
 
-        foreach ( GameObject obj in dict_[0])
-        {
+        //foreach ( GameObject obj in dict_[0])
+        //{
 
-            Debug.Log("dic_ 의 values count : " + obj);
-        }
+        //    //Debug.Log("dic_ 의 values count : " + obj);
+        //}
 
 
 
@@ -200,23 +204,137 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
 
 
-
+    // 생성된 블럭의 내부 포인트를 이용하여 라인(도로)를 그린다. 
     public void GenerateNewLine()
     {
-        Debug.Log("dict_.Count : " + dict_.Count); // 325
-        //for (int i = 0; i < dict_.Count + 1; i += 4)
+        //Debug.Log("dict_.Count : " + dict_.Count); // 325
+        //for (int i = 0; i < dict_.Count; i++)
         //{
-        //    GenerateNewLine_detailed(i);
+        //    GenProcedualRoalSystem(i);
         //    Debug.Log("dic.count : " + i);
         //}
 
-        GenerateNewLine_detailed(0);
 
-
+        // 한 블럭만 테스트
+        GenProcedualRoalSystem(0);
     }
 
 
 
+        
+    public void GenProcedualRoalSystem(int keyValue)
+    {
+        List<GameObject> subBPnts = new List<GameObject>();
+
+        // 서브블록의 points를 모두 추출하여 새로운 리스트에 담는다.
+        //Debug.Log("dict_[keyValue].Count :" + dict_[keyValue].Count);
+
+        for (int w = 0; w < dict_[keyValue].Count; w++) // 120
+        {
+            subBPnts.Add(dict_[keyValue][w]);
+        }
+
+        //Debug.Log("data check :" + subBPnts[0].transform.position);
+        //Debug.Log("data check :" + subBPnts[1].transform.position);
+
+        // 두개의 지점을 일단 거리측정한다. 
+        Vector3 chkDist = subBPnts[1].transform.position - subBPnts[0].transform.position;
+        float offset = chkDist.sqrMagnitude;
+
+        nextPnt = subBPnts[1]; // 첫번째는 시작점으로 두번째 부터 비교
+
+        foreach (GameObject subBPnt in subBPnts)
+        {
+            // 리스트에서 철번째 pnt를 기준으로 가장 가까운 거리의 지점을 찾음
+            // 자기 자신과는 비교하지 않음
+            if (subBPnts[0] != subBPnt)
+            {
+                Vector3 Dist = subBPnts[0].transform.position - subBPnt.transform.position;
+                float Distance = Dist.sqrMagnitude;
+
+                if (offset > Distance)
+                {
+                    offset = Distance; // 작은것으로 갱신
+                    nextPnt = subBPnt; // 지점 갱신 
+                    //Debug.Log("nextPnt :" + subBPnt.transform.position);
+                }
+            }
+        }
+
+        //Debug.Log("next posion to make sub road : " + nextPnt.transform.position);
+
+        getNextPnts.Add(subBPnts[0]); // 시작점
+        Debug.Log("start :" + getNextPnts[0].transform.position);
+        getNextPnts.Add(nextPnt); // 다음지점 --> 이것이 인풋으로 새로운 지점을 생성하여 저장해서, 라인을 그려야 한다.
+        Debug.Log("end :" + nextPnt.transform.position);
+
+
+
+        // Debug.Log("subBPnts.Count : " + subBPnts.Count); // 120개 확인!
+
+
+        // 위에서 얻은 지점과 다름지점들을 비교해서 가장 가까운 지점을 계산해야 함 
+        foreach (GameObject subObj in subBPnts)
+        {
+            for (int i = 0; i < subBPnts.Count; i++) //120
+            {
+                if (nextPnt != subBPnts[i] && !getNextPnts.Contains(subObj)) // 자기자신과 비교방지, 중복방지
+                {
+
+                    // 거리측정 
+                    Vector3 Dist_ = subObj.transform.position - subBPnts[i].transform.position;
+                    float Distance_ = Dist_.sqrMagnitude;
+
+                    if (offset >= Distance_)
+                    {
+                        offset = Distance_;
+                        nextPnt = subBPnts[i];
+
+                        getNextPnts.Add(nextPnt); // 다음지점 갱신
+                        Debug.Log("updated end :" + nextPnt.transform.position);
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+        // straight, corner, dead end, T intersection, X intersection 알고리듬 개발요 !!!!!!
+
+
+
+
+
+
+
+
+
+
+
+        // 라인을 그린다.
+        Vector3[] allSubPointPositions = new Vector3[getNextPnts.Count];
+
+        if (getNextPnts.Count >= 2)
+        {
+            for (int i = 0; i < getNextPnts.Count; i++)
+            {
+                allSubPointPositions[i] = getNextPnts[i].transform.position;
+            }
+
+            SpawnLineGenerator(allSubPointPositions);
+        }
+        else
+        {
+            Debug.Log("Need 2 or more points to draw a line.");
+        }
+
+
+    }
 
 
     // 생성한 subRoads posion을 이용하여 subRoads Line 생성! 블럭의 딕녀러리 키 값이 입력되며너 세부 지점값추출하여 라인 그리기
@@ -225,8 +343,11 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         // 딕셔너리에서 블럭별로 관리를 해야함. 딕셔너리에서 블력별로 세부 생성지점 가져오기
         //GameObject[] allPoints = GameObject.FindGameObjectsWithTag("gioPoint_sub"); // 이건 전체코드를 가져오는 방법임
 
-
+        // Horizontal
         List<GameObject> getNewGiPos = new List<GameObject>();
+
+        // Vertical
+        List<GameObject> getNewGiPos_Verti = new List<GameObject>();
 
         // 키값으로 딕셔너리의 value 즉, 블럭 내부의 지점의 오브젝트 리스트를 하나씩 불러온다.
         // 블럭의 딕셔너리 키값에 해당하는 내부블럭의 gioPos 추출, (라인그리는 값으로 활용해야함)
@@ -240,21 +361,21 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         List<GameObject> temp6 = new List<GameObject>();
 
         Debug.Log("dict_[keyValue].Count :" + dict_[keyValue].Count); // 972
-        Debug.Log("dict_[1].Count :" + dict_[1].Count); //  972??? 키 하나에 벨류가 모두 포함됨???
+        Debug.Log("dict_[1].Count :" + dict_[1].Count); 
 
         for (int w = 0; w < dict_[keyValue].Count + 1; w++) //82
-
-            if (w < 10 )
+        {
+            if (w < 12)
             {
                 getNewGiPos.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
             }
-            else if (10 <= w && w < 20)
+            else if (12 <= w && w < 24)
             {
                 temp.Add(dict_[keyValue][w]);
             }
-            else if (20 <= w && w < 30)
+            else if (24 <= w && w < 36)
             {
-                if (w == 20)
+                if (w == 24)
                 {
                     temp.Reverse(); // 순서를 바꿔준다.
 
@@ -265,15 +386,15 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                 }
                 getNewGiPos.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
             }
-            else if (30 <= w && w < 40)
+            else if (36 <= w && w < 48)
             {
                 //List<Vector3> temp2 = new List<Vector3>();
                 temp2.Add(dict_[keyValue][w]);
 
             }
-            else if (40 <= w && w < 50)
+            else if (48 <= w && w < 60)
             {
-                if (w == 40)
+                if (w == 48)
                 {
                     temp2.Reverse(); // 순서를 바꿔준다.
 
@@ -284,15 +405,15 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                 }
                 getNewGiPos.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
             }
-            else if (50 <= w && w < 60)
+            else if (60 <= w && w < 72)
             {
                 //List<Vector3> temp3 = new List<Vector3>();
                 temp3.Add(dict_[keyValue][w]);
 
             }
-            else if (60 <= w && w < 70)
+            else if (72 <= w && w < 84)
             {
-                if (w == 60)
+                if (w == 72)
                 {
                     temp3.Reverse(); // 순서를 바꿔준다.
 
@@ -303,14 +424,14 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                 }
                 getNewGiPos.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
             }
-            else if (70 <= w && w < 80)
+            else if (84 <= w && w < 96)
             {
                 //List<Vector3> temp4 = new List<Vector3>();
                 temp4.Add(dict_[keyValue][w]);
             }
-            else if (80 <= w && w < 90)
+            else if (96 <= w && w < 108)
             {
-                if (w == 80)
+                if (w == 96)
                 {
                     temp4.Reverse(); // 순서를 바꿔준다.
 
@@ -322,12 +443,12 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
                 getNewGiPos.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
             }
-            else if (90 <= w && w < 100)
+            else if (108 <= w && w < 120)
             {
                 //List<Vector3> temp5 = new List<Vector3>();
                 temp5.Add(dict_[keyValue][w]);
             }
-            else if (100 == w)
+            else if (120 == w)
             {
                 temp5.Reverse(); // 순서를 바꿔준다.
 
@@ -341,7 +462,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
             {
                 //Debug.Log("no more spawn prefabs!");
             }
-
+        }
     
 
 
@@ -362,6 +483,139 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         {
             Debug.Log("Need 2 or more points to draw a line.");
         }
+
+
+        // Vertical ==============================================================================
+
+        for (int w = 0; w < dict_[keyValue].Count + 1; w++) //82
+        {
+            for (int j = 0; j < 131; j += 13)
+            {
+                getNewGiPos_Verti.Add(dict_[keyValue][j]); // 리스트에 값을 담는다.
+            }
+            //for (int j = )
+     
+
+            //if (w < 10)
+            //{
+            //    getNewGiPos_Verti.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
+            //}
+            //else if (10 <= w && w < 20)
+            //{
+            //    temp.Add(dict_[keyValue][w]);
+            //}
+            //else if (20 <= w && w < 30)
+            //{
+            //    if (w == 20)
+            //    {
+            //        temp.Reverse(); // 순서를 바꿔준다.
+
+            //        foreach (GameObject j in temp)
+            //        {
+            //            getNewGiPos_Verti.Add(j); // 저장해준다.
+            //        }
+            //    }
+            //    getNewGiPos_Verti.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
+            //}
+            //else if (30 <= w && w < 40)
+            //{
+            //    //List<Vector3> temp2 = new List<Vector3>();
+            //    temp2.Add(dict_[keyValue][w]);
+
+            //}
+            //else if (40 <= w && w < 50)
+            //{
+            //    if (w == 40)
+            //    {
+            //        temp2.Reverse(); // 순서를 바꿔준다.
+
+            //        foreach (GameObject k in temp2)
+            //        {
+            //            getNewGiPos_Verti.Add(k);
+            //        }
+            //    }
+            //    getNewGiPos_Verti.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
+            //}
+            //else if (50 <= w && w < 60)
+            //{
+            //    //List<Vector3> temp3 = new List<Vector3>();
+            //    temp3.Add(dict_[keyValue][w]);
+
+            //}
+            //else if (60 <= w && w < 70)
+            //{
+            //    if (w == 60)
+            //    {
+            //        temp3.Reverse(); // 순서를 바꿔준다.
+
+            //        foreach (GameObject k in temp3)
+            //        {
+            //            getNewGiPos_Verti.Add(k);
+            //        }
+            //    }
+            //    getNewGiPos_Verti.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
+            //}
+            //else if (70 <= w && w < 80)
+            //{
+            //    //List<Vector3> temp4 = new List<Vector3>();
+            //    temp4.Add(dict_[keyValue][w]);
+            //}
+            //else if (80 <= w && w < 90)
+            //{
+            //    if (w == 80)
+            //    {
+            //        temp4.Reverse(); // 순서를 바꿔준다.
+
+            //        foreach (GameObject k in temp4)
+            //        {
+            //            getNewGiPos_Verti.Add(k);
+            //        }
+            //    }
+
+            //    getNewGiPos_Verti.Add(dict_[keyValue][w]); // 리스트에 값을 담는다.
+            //}
+            //else if (90 <= w && w < 100)
+            //{
+            //    //List<Vector3> temp5 = new List<Vector3>();
+            //    temp5.Add(dict_[keyValue][w]);
+            //}
+            //else if (100 == w)
+            //{
+            //    temp5.Reverse(); // 순서를 바꿔준다.
+
+            //    foreach (GameObject k in temp5)
+            //    {
+            //        getNewGiPos_Verti.Add(k);
+            //    }
+
+            //}
+            //else
+            //{
+            //    //Debug.Log("no more spawn prefabs!");
+            //}
+        }
+
+
+
+
+
+        Vector3[] allPointPositions_verti = new Vector3[getNewGiPos_Verti.Count];
+
+        if (getNewGiPos_Verti.Count >= 2)
+        {
+            for (int i = 0; i < getNewGiPos_Verti.Count; i++)
+            {
+                allPointPositions_verti[i] = getNewGiPos_Verti[i].transform.position;
+            }
+
+            SpawnLineGenerator_verti(allPointPositions_verti);
+        }
+        else
+        {
+            Debug.Log("Need 2 or more points to draw a line.");
+        }
+
+
     }
 
 
@@ -409,6 +663,16 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     }
 
 
+
+    // straight, corner, dead end, T intersection, X intersection 알고리듬 개발요
+    private void SpawnLineGenerator_verti(Vector3[] linePoints)
+    {
+        GameObject newLineGen_ = Instantiate(lineGeneratorPrefab);
+        LineRenderer lRend = newLineGen_.GetComponent<LineRenderer>();
+
+        lRend.positionCount = linePoints.Length;
+        lRend.SetPositions(linePoints);
+    }
 
 
 
