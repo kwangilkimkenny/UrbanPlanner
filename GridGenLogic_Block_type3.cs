@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GridGenLogic_Block_type3 : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
     public GameObject newLineGen, newLineGen_;
 
+    Renderer subBColor; 
 
 
     // 불러올 게임오브젝트 리스트 선언
@@ -41,7 +43,8 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     public GameObject nextPnt, nextPnt_;
     public List<GameObject> getNextPnts = new List<GameObject>();
 
-
+    // get each block info using drodown UI
+    public UI_SelectBlock SelectBlock;
 
 
 
@@ -116,107 +119,64 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
         }
 
-        //foreach ( GameObject obj in dict_[0])
-        //{
-
-        //    //Debug.Log("dic_ 의 values count : " + obj);
-        //}
-
-
-
     }
 
 
+    public void SelectedBlock_By_DropDown()
+    {
+        // 지역변수 선언
+        List<GameObject> subBPnts = new List<GameObject>();
+
+        // 서브블록의 points를 모두 추출하여 새로운 리스트에 담는다.
+        //Debug.Log("dict_[keyValue].Count :" + dict_[keyValue].Count);
+
+        // UI_SelectBlock DropDown 선택 후 블록의 subGioPos 위치값 추출하기
+        UI_SelectBlock Value = GameObject.Find("Block_ID").GetComponent<UI_SelectBlock>();
+        Debug.Log("Value.selectedValue: " + Value.BlockList.value);
 
 
 
-    //// subRoads 를 그리기 위한 Sub block positon 추출
-    //public void DrawSubRoads_GioPos_Horizontal()
-    //{
-    //    // get updated value - current
-    //    Debug.Log("run getOriginGioPos()! ");
-    //    getOriginGioPos();
+        for (int w = 0; w < dict_[Value.BlockList.value].Count; w++) // 120
+        {
+            subBPnts.Add(dict_[Value.BlockList.value][w]);
+        }
 
-    //    for (int k = 0; k < PosEachBlock.Count; k += 4 )
-    //    {
-    //        //Debug.Log("PosEachBlock.Count : " + PosEachBlock.Count);
-    //        GameObject P1 = PosEachBlock[k];
-    //        GameObject P2 = PosEachBlock[k + 1];
-    //        GameObject P3 = PosEachBlock[k + 2];
-    //        GameObject P4 = PosEachBlock[k + 3];
 
-    //        // 점이 몇개가 생성될 것인지 결정
-    //        //int RangeNums = Random.Range(2, 10);
-    //        int RangeNums = 10;
 
-    //        float div = 1f / RangeNums;
+        // keyValue로 딕셔너리의 키값에 해당하는 Values list를 모두 추출하여 색 변화시키기(선택되었다는 표시)
+        foreach (GameObject sBnt in subBPnts)
+        {
+            subBColor = sBnt.GetComponent<Renderer>();
+            subBColor.material.color = Color.red;
+            Debug.Log("Changed Color! Selected Block subGioPos");
+        }
+        
 
-    //        int key_ = 0;
-    //        for (int i = 0; i < RangeNums; i++)
-    //        {
-
-    //            //Debug.Log("k:" + k);
-    //            // 블럭의 중간 생성지점 랜덤으로 포인트 생성
-    //            //float div = Random.Range(0f, 1f);
-
-    //            //Debug.Log("div:" + div);
-
-    //            //var dict = new Dictionary<int, List<GameObject>>();
-
-    //            if (!dict.ContainsKey(key_))
-    //            {
-    //                //add
-    //                dict.Add(key_, new List<GameObject>());
-    //            }
-
-    //            //// Vertical 
-    //            ////Vector3.Lerp(vec3 from, vec3 to, float time)
-    //            //Vector3 newPos1 = Vector3.Lerp(P1.transform.position, P2.transform.position, div);
-    //            //GameObject subPos1 = Instantiate(SubPosObj, newPos1, Quaternion.identity);
-
-    //            //dict[key_].Add(subPos1);
-
-    //            //Vector3 newPos4 = Vector3.Lerp(P3.transform.position, P4.transform.position, div);
-    //            //GameObject subPos4 = Instantiate(SubPosObj, newPos4, Quaternion.identity);
-
-    //            //dict[key_].Add(subPos4);
-
-    //            // ---------------------------------------------------------------------------
-    //            // Horizontal 
-    //            Vector3 newPos3 = Vector3.Lerp(P1.transform.position, P3.transform.position, div);
-    //            GameObject subPos3 = Instantiate(SubPosObj, newPos3, Quaternion.identity);
-
-    //            dict[key_].Add(subPos3);
-
-    //            Vector3 newPos2 = Vector3.Lerp(P2.transform.position, P4.transform.position, div);
-    //            GameObject subPo2 = Instantiate(SubPosObj, newPos2, Quaternion.identity);
-
-    //            dict[key_].Add(subPo2);
-
-    //            key_ += 4;
-
-    //            div += (1f / RangeNums); 
-    //        }
-
-    //    }
-
-    //}
-
+    }
 
 
     // 생성된 블럭의 내부 포인트를 이용하여 라인(도로)를 그린다. 
     public void GenerateNewLine()
     {
-        //Debug.Log("dict_.Count : " + dict_.Count); // 325
-        //for (int i = 0; i < dict_.Count; i++)
+        // 전체 블럭에서 세부 블록 로드 생성
+        //Debug.Log("dict_.Count : " + dict_.Count); // 81
+        //for (int i = 0; i < dict_.Count-1; i++)
         //{
         //    GenProcedualRoalSystem(i);
-        //    Debug.Log("dic.count : " + i);
         //}
 
+        // UI_SelectBlock에서 DropDown 메뉴 선택 후 실행하는 부분
+        UI_SelectBlock Value = GameObject.Find("Block_ID").GetComponent<UI_SelectBlock>();
+        Debug.Log("Value.selectedValue: " + Value.BlockList.value);
 
-        // 한 블럭만 테스트
-        GenProcedualRoalSystem(0);
+
+
+        // 블럭별 로드 생성
+        GenProcedualRoalSystem(Value.BlockList.value);
+
+        //GenProcedualRoalSystem(6);
+
+        //GenProcedualRoalSystem(80);
     }
 
 
@@ -224,6 +184,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         
     public void GenProcedualRoalSystem(int keyValue)
     {
+        // 지역변수 선언
         List<GameObject> subBPnts = new List<GameObject>();
 
         // 서브블록의 points를 모두 추출하여 새로운 리스트에 담는다.
@@ -291,28 +252,16 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                         nextPnt = subBPnts[i];
 
                         getNextPnts.Add(nextPnt); // 다음지점 갱신
-                        Debug.Log("updated end :" + nextPnt.transform.position);
+                        //Debug.Log("updated end :" + nextPnt.transform.position);
                     }
                 }
             }
         }
 
-
-
-
-
-
+        // 가장 가까운 지점을 모두 찾아서 1 ~ 4개를 찾아서 연결한다. 단 2개씩만 연결
 
 
         // straight, corner, dead end, T intersection, X intersection 알고리듬 개발요 !!!!!!
-
-
-
-
-
-
-
-
 
 
 
@@ -337,6 +286,9 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     }
 
 
+
+
+    // 사용안함 //
     // 생성한 subRoads posion을 이용하여 subRoads Line 생성! 블럭의 딕녀러리 키 값이 입력되며너 세부 지점값추출하여 라인 그리기
     public void GenerateNewLine_detailed(int keyValue)
     {
