@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
+using System;
 
 public class GridGenLogic_Block_type3 : MonoBehaviour
 {
@@ -46,6 +48,9 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     // get each block info using drodown UI
     public UI_SelectBlock SelectBlock;
 
+    // error check!
+    //public Text Error_01;
+
 
 
 
@@ -53,9 +58,9 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
     public void DrawSubRoads_GioPos_Vertical()
     {
         // get updated value - current
-        Debug.Log("run getOriginGioPos()! ");
+        //Debug.Log("run getOriginGioPos()! ");
         getOriginGioPos();
-        Debug.Log("PosEachBlock.Count : " + PosEachBlock.Count/4); //81
+        //Debug.Log("PosEachBlock.Count : " + PosEachBlock.Count/4); //81
 
         int key_ = 0;
         for (int k = 0; k < PosEachBlock.Count; k += 4)
@@ -134,23 +139,30 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
         UI_SelectBlock Value = GameObject.Find("Block_ID").GetComponent<UI_SelectBlock>();
         Debug.Log("Value.selectedValue: " + Value.BlockList.value);
 
-
-
-        for (int w = 0; w < dict_[Value.BlockList.value].Count; w++) // 120
+       try
         {
-            subBPnts.Add(dict_[Value.BlockList.value][w]);
+            for (int w = 0; w < dict_[Value.BlockList.value].Count; w++) // 120
+            {
+                subBPnts.Add(dict_[Value.BlockList.value][w]);
+            }
+
+            // keyValue로 딕셔너리의 키값에 해당하는 Values list를 모두 추출하여 색 변화시키기(선택되었다는 표시)
+            foreach (GameObject sBnt in subBPnts)
+            {
+                subBColor = sBnt.GetComponent<Renderer>();
+                subBColor.material.color = Color.red;
+                Debug.Log("Changed Color! Selected Block subGioPos");
+            }
+
+        }
+        catch
+        {
+            //Error_01.text = "Sorry! Select Block No first please.";
+        }finally
+        {
+            //Error_01.text = "...";
         }
 
-
-
-        // keyValue로 딕셔너리의 키값에 해당하는 Values list를 모두 추출하여 색 변화시키기(선택되었다는 표시)
-        foreach (GameObject sBnt in subBPnts)
-        {
-            subBColor = sBnt.GetComponent<Renderer>();
-            subBColor.material.color = Color.red;
-            Debug.Log("Changed Color! Selected Block subGioPos");
-        }
-        
 
     }
 
@@ -639,7 +651,8 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
 
         foreach (GameObject p in allRoadPonts)
         {
-            Destroy(p);
+            //Destroy(p);
+            p.SetActive(false);
         }
 
         GameObject[] getSubRoadLine = GameObject.FindGameObjectsWithTag("subRoad");

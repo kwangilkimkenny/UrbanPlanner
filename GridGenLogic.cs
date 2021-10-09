@@ -25,7 +25,7 @@ public class GridGenLogic : MonoBehaviour
         //// 사전 GioPos위치값 추출을 위한 함수 실행
         //this.gameObject.GetComponent<GridGenLogic_Block>().PreGetOriginGioPos();
 
-        Debug.Log("GioPos의 사전 위치값 생성 체크!");
+        //Debug.Log("GioPos의 사전 위치값 생성 체크!");
 
 
         if (gridPrefab)
