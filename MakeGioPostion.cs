@@ -20,6 +20,7 @@ public class MakeGioPostion : MonoBehaviour
     private void Awake()
     {
         Get_mouse_input(false);
+        GameObject.Find("AddGioPnt").transform.Find("AddGioPntObj").gameObject.SetActive(false);
     }
 
 
@@ -37,6 +38,8 @@ public class MakeGioPostion : MonoBehaviour
             Debug.Log("Turn Off. get new GioPosition.");
             //AddGioPosFunc = GameObject.Find("AddGioPntObj");
             //AddGioPosFunc.SetActive(false);
+
+            GameObject.Find("AddGioPnt").transform.Find("AddGioPntObj").gameObject.SetActive(false);
 
             foreach (GameObject gitm_ in GameObject.FindGameObjectsWithTag("GioPos_"))
             {
