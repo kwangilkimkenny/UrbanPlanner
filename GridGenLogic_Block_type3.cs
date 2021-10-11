@@ -83,7 +83,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
             for (int i = 0; i < arrNumOfBlk; i++) //10 개만 생1
             {
 
-                if (!dict_.ContainsKey(key_))
+                if (!dict_.ContainsKey(key_)) // 키값이 중복되는지 체
                 {
                     // 선언
                     dict_.Add(key_, new List<GameObject>());
@@ -113,6 +113,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                     GameObject subPos1_ = Instantiate(SubPosObj, subNewPos1, Quaternion.identity);
 
                     dict_[key_].Add(subPos1_);
+                    Debug.Log("Genereated dictionary dict_ !");
 
                     num++;
                     div_ += (1f / RangeNums);

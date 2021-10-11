@@ -21,8 +21,12 @@ public class MakeGioPnt_Add : MonoBehaviour
     private Transform BlockPosParent;
     private Transform SubBlockPosParent;
 
+    public GameObject BD_Prefab;
+
     List<GameObject> inst_All = new List<GameObject>();
     public Dictionary<int, List<GameObject>> dict_Add = new Dictionary<int, List<GameObject>>();
+
+    List<GameObject> AddedBDs = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -166,8 +170,44 @@ public class MakeGioPnt_Add : MonoBehaviour
 
 
 
+    // 추가된 블럭안의 빌딩 생성
+    public void SpawnBD()
+    {
+        if (dict_Add != null)
+        {
+            Debug.Log("추가빌딩 생성");
+            int SpawnBD = 0;
+            for (int i = 0; i <= dict_Add.Count - 1; i++)
+            {
+
+                foreach (GameObject obj in dict_Add[i])
+                {
+                    Debug.Log("obj" + obj);
+
+                    GameObject SpBD = Instantiate(BD_Prefab, new Vector3(obj.transform.position.x, obj.transform.position.y, obj.transform.position.z), Quaternion.identity);
+
+                    AddedBDs.Add(SpBD);
+                    SpawnBD += 1;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("Before creating a building, the point of the block must be set.");
+        }
+
+    }
 
 
+
+    public void ResetAllBDs_Added()
+    {
+        foreach (GameObject buildings in GameObject.FindGameObjectsWithTag("building"))
+        {
+
+            Destroy(buildings);
+        }
+    }
 
 
 

@@ -37,15 +37,11 @@ public class SpawnBuilding : MonoBehaviour
     // spawnPrefabs_는 실제 spawn BD에서 게산할 값들임
     public List<GameObject> spawnPrefabs_ = new List<GameObject>();
 
-    // 생성한 빌딩의 게임오브젝트를 추적하시 위한 리스트 선언
+    // 생성한 빌딩의 게임오브젝트를 추적하기 위한 리스트 선언
     public List<GameObject> buildingPrebs = new List<GameObject>();
 
-    // 생성한 빌딩의 게임오브젝트를 추적하시 위한 리스트 선언  --- use this list values to manage swawned buildings
+    // 생성한 빌딩의 게임오브젝트를 추적하기 위한 리스트 선언  --- use this list values to manage swawned buildings
     public List<GameObject> ConsBuildings = new List<GameObject>();
-
-
-
-
 
 
     public int maxBuilding = 50;
@@ -90,12 +86,15 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
+    // 딕셔너리값 블럭의 세부 위치값 가져오
+    public GridGenLogic_Block_type3 subGPnt;
+
+
+
 
 
     public void StartSpawn()
     {
-
-
         ResetAllBuilding();
 
         if (state == true) // 즉, 스폰되어 있지 않았다면 스폰한다.
@@ -116,7 +115,6 @@ public class SpawnBuilding : MonoBehaviour
 
             state = true;
         }
-
     }
 
 
@@ -155,8 +153,10 @@ public class SpawnBuilding : MonoBehaviour
 
     private void Spawn()
     {
-
         Debug.Log("Contructing Buildings...");
+
+
+        GameObject.Find("SubGioPos").GetComponent<GridGenLogic_Block_type3>().DrawSubRoads_GioPos_Vertical();
 
         int k = 0;
         int SpawnedBD = 0;
@@ -195,7 +195,7 @@ public class SpawnBuilding : MonoBehaviour
             BlockIndicator_List.Add(BlockIndicator);
 
 
-
+            int j = 0;
             while (0 < allAreaValueList[i] - AddedBDArea) // 블럭 면적에서 추가된 빌딩들 면적을 빼다가 - 값이 나오기 전에 while 빠져나옴
             {
 
@@ -232,12 +232,16 @@ public class SpawnBuilding : MonoBehaviour
 
                 //Debug.Log("BD is spawned in Block - SpawnInstance : " + SpawnInstance);
 
+
+
                 // Move new object to the calculated spawn location
                 SpawnInstance.transform.position = rangePos;
 
+                
 
+                // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨. "dict_<key>. list<gameobject values>"
+                SpawnInstance.transform.position = ChangePosition(SpawnInstance.transform.position, j, i);
 
-                // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨
 
 
                 // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
@@ -258,11 +262,13 @@ public class SpawnBuilding : MonoBehaviour
                 // add Buindling
                 SpawnedBD += 1;
 
+                j += 1;
 
             }
 
             // 블럭당 생성된 빌딩 수 리스트에 기록
             BuildingsInBlocks.Add(SpawnedBD);
+
 
 
             // 다음 블럭을 계산하기 위해 값 초기화
@@ -304,6 +310,22 @@ public class SpawnBuilding : MonoBehaviour
 
     }
 
+
+    public Vector3 ChangePosition(Vector3 inputObj, int idxCnt, int key_i)
+    {
+        List<GameObject> temp_list = new List<GameObject>();
+        Debug.Log("ChangePosition check!!!!" + subGPnt.dict_);
+
+        foreach (GameObject eachObj in subGPnt.dict_[key_i])  // ???????왜 null 값으로 에러가 발생하는가???????? 일단 휴식!
+        {
+            Debug.Log("check eachObj" + eachObj);
+            temp_list.Add(eachObj);
+        }
+
+        inputObj = temp_list[idxCnt].transform.position;
+
+        return inputObj;
+    }
 
 
     // Find the intersection of two lines - 빌딩생성을 위한 블럭당 지형의 중심위치 추출
