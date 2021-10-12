@@ -113,7 +113,7 @@ public class GridGenLogic_Block_type3 : MonoBehaviour
                     GameObject subPos1_ = Instantiate(SubPosObj, subNewPos1, Quaternion.identity);
 
                     dict_[key_].Add(subPos1_);
-                    Debug.Log("Genereated dictionary dict_ !");
+                    //Debug.Log("Genereated dictionary dict_ !");
 
                     num++;
                     div_ += (1f / RangeNums);

@@ -84,16 +84,11 @@ public class SpawnBuilding : MonoBehaviour
     // Start position of each blocks
     public List<Vector3> startPosEachBlock = new List<Vector3>();
 
-
-
-    // 딕셔너리값 블럭의 세부 위치값 가져오
-    public GridGenLogic_Block_type3 subGPnt;
+    public List<GameObject> temp_list = new List<GameObject>();
 
 
 
-
-
-    public void StartSpawn()
+        public void StartSpawn()
     {
         ResetAllBuilding();
 
@@ -156,11 +151,18 @@ public class SpawnBuilding : MonoBehaviour
         Debug.Log("Contructing Buildings...");
 
 
-        GameObject.Find("SubGioPos").GetComponent<GridGenLogic_Block_type3>().DrawSubRoads_GioPos_Vertical();
+        foreach (GameObject subGiopos in GameObject.FindGameObjectsWithTag("gioPoint_sub"))
+        {
+            temp_list.Add(subGiopos);
+        }
+        Debug.Log("추출된 빌딩 포지션 수 :" + temp_list.Count); // "9720개/81블ㄹ = 120개/블럭"
 
+
+        int j = 0;
         int k = 0;
         int SpawnedBD = 0;
         float AddedBDArea = 0;
+
         for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
         {
 
@@ -195,7 +197,7 @@ public class SpawnBuilding : MonoBehaviour
             BlockIndicator_List.Add(BlockIndicator);
 
 
-            int j = 0;
+            
             while (0 < allAreaValueList[i] - AddedBDArea) // 블럭 면적에서 추가된 빌딩들 면적을 빼다가 - 값이 나오기 전에 while 빠져나옴
             {
 
@@ -237,10 +239,17 @@ public class SpawnBuilding : MonoBehaviour
                 // Move new object to the calculated spawn location
                 SpawnInstance.transform.position = rangePos;
 
-                
 
-                // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨. "dict_<key>. list<gameobject values>"
-                SpawnInstance.transform.position = ChangePosition(SpawnInstance.transform.position, j, i);
+
+
+
+
+                // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨. "dict_<key>. list<gameobject values>" 이걸 해야햐는데...
+                // j 는 idxCnt
+                SpawnInstance.transform.position = ChangePosition(SpawnInstance.transform.position, j);
+
+
+
 
 
 
@@ -262,15 +271,22 @@ public class SpawnBuilding : MonoBehaviour
                 // add Buindling
                 SpawnedBD += 1;
 
+                // 블럭내의 건물생성포인트 개수 120개씩 구 
                 j += 1;
-
             }
+
+            Debug.Log("temp_list.Count / interSecPos.Count : " + temp_list.Count / interSecPos.Count);
+
+            // 블럭안에 빌딩을 세우지 말아야 하는 수 = 120 - 블럭안에서 생성한 빌딩 수  
+            j += 2 * (temp_list.Count / (interSecPos.Count/4)) - SpawnedBD;
+
+            Debug.Log("j : " + j);
 
             // 블럭당 생성된 빌딩 수 리스트에 기록
             BuildingsInBlocks.Add(SpawnedBD);
 
 
-
+        
             // 다음 블럭을 계산하기 위해 값 초기화
             AddedBDArea = 0;
             SpawnedBD = 0;
@@ -306,23 +322,25 @@ public class SpawnBuilding : MonoBehaviour
 
 
             k += 4;
+
+
         }
 
     }
 
 
-    public Vector3 ChangePosition(Vector3 inputObj, int idxCnt, int key_i)
+    public Vector3 ChangePosition(Vector3 inputObj, int idxCnt)
     {
-        List<GameObject> temp_list = new List<GameObject>();
-        Debug.Log("ChangePosition check!!!!" + subGPnt.dict_);
-
-        foreach (GameObject eachObj in subGPnt.dict_[key_i])  // ???????왜 null 값으로 에러가 발생하는가???????? 일단 휴식!
+        try
         {
-            Debug.Log("check eachObj" + eachObj);
-            temp_list.Add(eachObj);
-        }
+            inputObj = temp_list[idxCnt].transform.position;
 
-        inputObj = temp_list[idxCnt].transform.position;
+
+        }
+        catch
+        {
+            Debug.Log("index out of range.");
+        }
 
         return inputObj;
     }
