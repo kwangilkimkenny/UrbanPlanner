@@ -12,6 +12,10 @@ public class SpawnBuilding : MonoBehaviour
     // 처음 빌딩을 생성할 때 사용
     public GameObject[] spawnPrefab;
 
+    // 블럭안의 그라운드 재질 종류별 프리핍
+    //public GameObject asplatPrefab;
+
+
     // 다시 빌딩을 생성할 때 사용
     public GameObject[] newBuildings;
 
@@ -88,7 +92,7 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
-        public void StartSpawn()
+    public void StartSpawn()
     {
         ResetAllBuilding();
 
@@ -163,6 +167,9 @@ public class SpawnBuilding : MonoBehaviour
         int SpawnedBD = 0;
         float AddedBDArea = 0;
 
+        // 빌딩 생성위치 저장을위한 리스트  
+        List<Vector3> BD_Set_Postion = new List<Vector3>();
+
         for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
         {
 
@@ -234,24 +241,19 @@ public class SpawnBuilding : MonoBehaviour
 
                 //Debug.Log("BD is spawned in Block - SpawnInstance : " + SpawnInstance);
 
-
+                
 
                 // Move new object to the calculated spawn location
                 SpawnInstance.transform.position = rangePos;
 
 
-
-
-
-
                 // 이제 빌딩의 위치를 각 블록안에 재배치하면 됨. "dict_<key>. list<gameobject values>" 이걸 해야햐는데...
                 // j 는 idxCnt
-                SpawnInstance.transform.position = ChangePosition(SpawnInstance.transform.position, j);
+                SpawnInstance.transform.position = ChangePosition(SpawnInstance.transform.position, Random.Range(j, j+120));
 
-
-
-
-
+                
+                // 빌딩 생성 위치 저장, 위치 체크해서 빈 위치에는 아스팔스 생성하기, 하지만 모든 위치에 생성해서 빌딩 위치이도해도 도로지형 유지할 것 
+                BD_Set_Postion.Add(SpawnInstance.transform.position);
 
                 // 생성된 빌딩 SpawnInstance 를 리스트에 담아서 관리해보자.
                 ConsBuildings.Add(SpawnInstance);
@@ -275,12 +277,22 @@ public class SpawnBuilding : MonoBehaviour
                 j += 1;
             }
 
-            Debug.Log("temp_list.Count / interSecPos.Count : " + temp_list.Count / interSecPos.Count);
 
-            // 블럭안에 빌딩을 세우지 말아야 하는 수 = 120 - 블럭안에서 생성한 빌딩 수  
-            j += 2 * (temp_list.Count / (interSecPos.Count/4)) - SpawnedBD;
+            // 빌딩을 생성하지 않은 부분은 세부도로재질로 지형 생성, 그러나 모든 위치에 도로 생성 
+            //foreach (GameObject ePos in temp_list)
+            //{
 
-            Debug.Log("j : " + j);
+            //    GameObject groudSpInstance = Instantiate(asplatPrefab, ePos.transform.position, transform.rotation);
+            //}
+
+
+            //Debug.Log("temp_list.Count / (interSecPos.Count/4) : " + temp_list.Count / (interSecPos.Count/4)); // 120
+            //Debug.Log("SpawnedBD : " + SpawnedBD); // 25
+
+            // 블럭안에 빌딩을 세우지 말아야 하는 수 = 120 - 블럭안에서 생성한 빌딩 수
+            j = j + (temp_list.Count / (interSecPos.Count/4)) - SpawnedBD;
+
+            //Debug.Log("j : " + j);
 
             // 블럭당 생성된 빌딩 수 리스트에 기록
             BuildingsInBlocks.Add(SpawnedBD);
