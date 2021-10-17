@@ -35,7 +35,7 @@ public class MouseDrag : MonoBehaviour
         //Debug.Log("EndMousePos :" + EndMousePos);
 
         // Adjust the location by adding an offset.
-        Vector3 newPosition = new Vector3(EndMousePos.x, 0f, EndMousePos.z);
+        Vector3 newPosition = new Vector3(EndMousePos.x, EndMousePos.y, EndMousePos.z);
          
         // Assign new position.
         transform.position = newPosition;

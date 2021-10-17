@@ -91,6 +91,12 @@ public class SpawnBuilding : MonoBehaviour
     public List<GameObject> temp_list = new List<GameObject>();
 
 
+    public float raycastDis = 100f;
+    //public GameObject GioPrefab;
+    public Vector3 itmPos;
+
+
+
 
     public void StartSpawn()
     {
@@ -150,6 +156,22 @@ public class SpawnBuilding : MonoBehaviour
 
 
 
+    public object PositionRaycast(GameObject obj_)
+    {
+        RaycastHit hit;
+
+        Physics.Raycast(obj_.transform.position, Vector3.down, out hit, raycastDis);
+
+        itmPos = hit.point;
+
+        //Debug.Log("itmPos : " + itmPos);
+
+        return itmPos;
+
+    }
+
+
+
     private void Spawn()
     {
         Debug.Log("Contructing Buildings...");
@@ -169,6 +191,8 @@ public class SpawnBuilding : MonoBehaviour
 
         // 빌딩 생성위치 저장을위한 리스트  
         List<Vector3> BD_Set_Postion = new List<Vector3>();
+
+
 
         for (int i = 0; i <= interSecPos.Count / 4 - 1; i++)
         {
@@ -194,7 +218,9 @@ public class SpawnBuilding : MonoBehaviour
             // 블럭위치를 알려주는 인디케이터
             GameObject BlockIndicator = Instantiate(BlockIndicatorPrefab, spawnLocations[i], Quaternion.identity);
 
-            BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, spawnLocations[i].y + 0.7f, spawnLocations[i].z);
+            PositionRaycast(BlockIndicator); // itmPos.y
+
+            BlockIndicator.transform.position = new Vector3(spawnLocations[i].x, itmPos.y + 0.7f, spawnLocations[i].z);
 
             // GameObject[] BlockIndicator_Array = new GameObject[interSecPos.Count / 4 - 1];
             // 리스트에 추가 - 이 값은 UI에서 추적 관리할것임 -> 연결코드는 UI_Get_info_Block 임!

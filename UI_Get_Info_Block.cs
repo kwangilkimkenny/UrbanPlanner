@@ -24,6 +24,9 @@ public class UI_Get_Info_Block : MonoBehaviour
     private int getBDNumber;
     public Text BDCounter;
 
+    private RaycastItemAligner rayAli_;
+    private GridGenLogic gridGenLogic_;
+
 
     // Start is called before the first frame update
     void Start()
@@ -50,7 +53,7 @@ public class UI_Get_Info_Block : MonoBehaviour
                 if (hit.transform.gameObject.tag == "BlockIndicator")
                 {
                     // Block의 id번호, 면적, 스폰된 빌딩 수, 빌딩 종류 추출하여 UI에 표시
-                    //Debug.Log("Get info of Block");
+                    // Debug.Log("Get info of Block");
 
                     foreach (GameObject indi in Spawn.BlockIndicator_List)
                     {
@@ -62,6 +65,11 @@ public class UI_Get_Info_Block : MonoBehaviour
                         {
                             findIndex_int = Spawn.BlockIndicator_List.FindIndex(x => x == indi);
                             findIndexValue.text= "Block ID :" + findIndex_int.ToString();
+
+
+                            //gridGenLogic_.GetComponent<GridGenLogic>().GenerateGrid();
+
+                            //obj.transform.position = gridGenLogic_.
 
 
                             indi.transform.localScale += new Vector3(0.5f, 0.5f, 0.5f);
@@ -84,6 +92,8 @@ public class UI_Get_Info_Block : MonoBehaviour
 
                         }
 
+                        //// reset position of flag indicator 
+                        //indi.transform.localScale += new Vector3(-0.5f, -0.5f, -0.5f);
                     }
                    
 

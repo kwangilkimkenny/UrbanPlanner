@@ -77,7 +77,7 @@ public class GridGenLogic : MonoBehaviour
     }
 
 
-    void GenerateGrid()
+    public void GenerateGrid()
     {
         for (int i = 0; i < columns; i++)
         {
@@ -87,13 +87,12 @@ public class GridGenLogic : MonoBehaviour
 
                 obj.transform.SetParent(gameObject.transform);
 
-                //GameObject re_itmPos = GameObject.FindGameObjectWithTag("GioPos");
-
+                // class RaycastItemAligner 에서 위치값 obj를 입력하면 터레인에 레이캐스트를 하여 위치정보값을 추출 후 반환 
                 rayAli.GetComponent<RaycastItemAligner>().PositionRaycast(obj);
 
                 obj.transform.position = rayAli.itmPos;
 
-                Debug.Log("obj posiiton : " + obj.transform.position);
+                //Debug.Log("obj posiiton : " + obj.transform.position);
 
                 // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
                 props.Add(obj);
