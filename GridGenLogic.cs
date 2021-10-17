@@ -10,13 +10,18 @@ public class GridGenLogic : MonoBehaviour
     public int columns = 10;
     public int scale = 1;
     public GameObject gridPrefab;
-    public Vector3 leftBottomLocation = new Vector3(0, 0, 0);
+    public Vector3 leftBottomLocation = new Vector3(0, 30, 0);
+    //public Vector3 leftBottomLocation = new Vector3(0, 0, 0);
 
     // 생성된 gioPoint를 props 리스트에 등록해주기 위한 리스트
     public List<GameObject> props = new List<GameObject>();
     public List<Vector3> prebPosAll = new List<Vector3>();
 
     public string Post_PosEachBlock { get; private set; }
+
+    public RaycastItemAligner rayAli;
+
+    public int raycastDis = 100;
 
 
     // Start is called before the first frame update
@@ -80,14 +85,15 @@ public class GridGenLogic : MonoBehaviour
             {
                 GameObject obj = Instantiate(gridPrefab, new Vector3(leftBottomLocation.x + scale * i, leftBottomLocation.y, leftBottomLocation.z + scale * j), Quaternion.identity);
 
-                //print("Instantiate1");
                 obj.transform.SetParent(gameObject.transform);
 
-                //print("Instantiate2");
-                obj.GetComponent<GridStat>().x = i;
+                //GameObject re_itmPos = GameObject.FindGameObjectWithTag("GioPos");
 
-                //print("Instantiate3");
-                obj.GetComponent<GridStat>().y = j;
+                rayAli.GetComponent<RaycastItemAligner>().PositionRaycast(obj);
+
+                obj.transform.position = rayAli.itmPos;
+
+                Debug.Log("obj posiiton : " + obj.transform.position);
 
                 // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
                 props.Add(obj);
@@ -96,6 +102,10 @@ public class GridGenLogic : MonoBehaviour
             }
         }
     }
+
+
+
+
 
     // 생성된 오브젝트의 위치를 추출해주는 함수를 만든다.
     public void getPosOfPrefabs()
