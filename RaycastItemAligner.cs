@@ -18,7 +18,7 @@ public class RaycastItemAligner : MonoBehaviour
 
         itmPos = hit.point;
 
-        //Debug.Log("itmPos : " + itmPos);
+        Debug.Log("itmPos : " + itmPos);
 
         return itmPos;
 
