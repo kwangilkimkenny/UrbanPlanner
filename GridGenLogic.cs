@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridGenLogic : MonoBehaviour
 {
@@ -22,6 +23,16 @@ public class GridGenLogic : MonoBehaviour
     public RaycastItemAligner rayAli;
 
     public int raycastDis = 100;
+
+    public Text earthVolumeText;
+    public Text post_earth_volume;
+    public Text getEarVolText;
+
+
+    private bool get_e_volume = true;
+
+    public float resultOfEarthVolume;
+    public float re_post_e_volume;
 
 
     // Start is called before the first frame update
@@ -61,6 +72,9 @@ public class GridGenLogic : MonoBehaviour
         getPosOfPrefabs();
     }
 
+
+    private int check_cal_num = 1;
+
     // GioPos 파되 - 버튼에 적용하는 실행함
     public void resetGioPosition()
     {
@@ -73,35 +87,113 @@ public class GridGenLogic : MonoBehaviour
         props.Clear();
         prebPosAll.Clear();
 
+        // 토공량 값 초기
+        rayAli.GetComponent<RaycastItemAligner>().earthVolume = 0f;
 
+        // 토공량 두번째 계산 이후에 초기화 ========!!!!! 코드 수정할 것!!!
+        if (check_cal_num % 2 == 0)
+        {
+            resultOfEarthVolume = 0;
+            earthVolumeText.text = "Pre Earth Volume : " + resultOfEarthVolume.ToString();
+
+            re_post_e_volume = 0;
+            post_earth_volume.text = "Post Earth Volume : " + re_post_e_volume.ToString();
+
+            float get_earth_vol_value = 0; ;
+            getEarVolText.text = "Get Earth Volume : " + get_earth_vol_value.ToString();
+
+            Debug.Log("reset check : " + check_cal_num);
+        }
+        check_cal_num += 1;
+        //Debug.Log("reset check : " + check_cal_num);
     }
 
+    private int checkNum = 1;
 
     public void GenerateGrid()
     {
-        for (int i = 0; i < columns; i++)
+        if ( (checkNum % 2) != 0 )
         {
-            for (int j = 0; j < rows; j++)
+            Debug.Log("토공 전 지형의 부피 계산!");
+            for (int i = 0; i < columns; i++)
             {
-                GameObject obj = Instantiate(gridPrefab, new Vector3(leftBottomLocation.x + scale * i, leftBottomLocation.y, leftBottomLocation.z + scale * j), Quaternion.identity);
+                for (int j = 0; j < rows; j++)
+                {
+                    GameObject obj = Instantiate(gridPrefab, new Vector3(leftBottomLocation.x + scale * i, leftBottomLocation.y, leftBottomLocation.z + scale * j), Quaternion.identity);
 
-                obj.transform.SetParent(gameObject.transform);
+                    obj.transform.SetParent(gameObject.transform);
 
-                // class RaycastItemAligner 에서 위치값 obj를 입력하면 터레인에 레이캐스트를 하여 위치정보값을 추출 후 반환 
-                rayAli.GetComponent<RaycastItemAligner>().PositionRaycast(obj);
+                    // class RaycastItemAligner 에서 위치값 obj를 입력하면 터레인에 레이캐스트를 하여 위치정보값을 추출 후 반환 
+                    rayAli.GetComponent<RaycastItemAligner>().PositionRaycast(obj);
 
-                obj.transform.position = rayAli.itmPos;
+                    obj.transform.position = rayAli.itmPos;
 
-                //Debug.Log("obj posiiton : " + obj.transform.position);
+                    //Debug.Log("obj posiiton : " + obj.transform.position);
 
-                // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
-                props.Add(obj);
+                    // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
+                    props.Add(obj);
 
 
+                    // 토공량 계산하기 : 처음값 추출
+                    if (get_e_volume == true)
+                    {
+                        rayAli.GetComponent<RaycastItemAligner>().EarthVolume(obj);
+                        resultOfEarthVolume = rayAli.earthVolume;
+                        earthVolumeText.text = "Pre Earth Volume : " + resultOfEarthVolume.ToString();
+
+                    }
+                    //else
+                    //{
+                    //    rayAli.GetComponent<RaycastItemAligner>().Post_EarthVolume(obj);
+                    //    re_post_e_volume = rayAli.earthVolume_;
+                    //}
+                }
             }
+            get_e_volume = false;
+            checkNum += 1;
         }
+        else
+        {
+            Debug.Log("토공 후 지형의 부피 계산!");
+            for (int i = 0; i < columns; i++)
+            {
+                for (int j = 0; j < rows; j++)
+                {
+                    GameObject obj = Instantiate(gridPrefab, new Vector3(leftBottomLocation.x + scale * i, leftBottomLocation.y, leftBottomLocation.z + scale * j), Quaternion.identity);
+
+                    obj.transform.SetParent(gameObject.transform);
+
+                    // class RaycastItemAligner 에서 위치값 obj를 입력하면 터레인에 레이캐스트를 하여 위치정보값을 추출 후 반환 
+                    rayAli.GetComponent<RaycastItemAligner>().PositionRaycast(obj);
+
+                    obj.transform.position = rayAli.itmPos;
+
+                    //Debug.Log("obj posiiton : " + obj.transform.position);
+
+                    // 생성된 obj를 리스트에 등록해준다. 그러면 생성된 obj들을 모두 추적할 수 있다.
+                    props.Add(obj);
+
+                    rayAli.GetComponent<RaycastItemAligner>().Post_EarthVolume(obj);
+                    re_post_e_volume = rayAli.earthVolume_;
+                    post_earth_volume.text = "Post Earth Volume : " + re_post_e_volume.ToString();
+
+                }
+            }
+
+            get_re_e_volume();
+        }
+
     }
 
+
+    // 토공량 계산, 버튼으로 작동하기
+    public void get_re_e_volume()
+    {
+
+        float get_earth_vol_value = resultOfEarthVolume - re_post_e_volume;
+        getEarVolText.text = "Earth Volume : " + get_earth_vol_value.ToString();
+
+    }
 
 
 
