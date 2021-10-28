@@ -19,7 +19,10 @@ public class RaycastItemAligner : MonoBehaviour
 
     public object PositionRaycast(GameObject obj_)
     {
+
+
         RaycastHit hit;
+
 
         Physics.Raycast(obj_.transform.position, Vector3.down, out hit, raycastDis);
 
@@ -61,6 +64,7 @@ public class RaycastItemAligner : MonoBehaviour
 
         return earthVolume_;
     }
+
 
 
 }

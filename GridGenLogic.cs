@@ -96,8 +96,12 @@ public class GridGenLogic : MonoBehaviour
             resultOfEarthVolume = 0;
             earthVolumeText.text = "Pre Earth Volume : " + resultOfEarthVolume.ToString();
 
-            re_post_e_volume = 0;
+
+            rayAli.GetComponent<RaycastItemAligner>().earthVolume_ = 0;
+            re_post_e_volume = rayAli.earthVolume_;
+            //Debug.Log("re_post_e_volume : " + re_post_e_volume);
             post_earth_volume.text = "Post Earth Volume : " + re_post_e_volume.ToString();
+
 
             float get_earth_vol_value = 0; ;
             getEarVolText.text = "Get Earth Volume : " + get_earth_vol_value.ToString();
@@ -179,8 +183,9 @@ public class GridGenLogic : MonoBehaviour
 
                 }
             }
-
+            get_e_volume = true;
             get_re_e_volume();
+            checkNum += 1;
         }
 
     }
